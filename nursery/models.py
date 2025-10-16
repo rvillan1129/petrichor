@@ -64,6 +64,8 @@ class Plant(models.Model):
         help_text='sun light preference',
     )
 
+    #image = models.ImageField(upload_to='Plants')
+
     description = models.TextField(max_length=1000, help_text="Enter a brief description of the plant")
     
     care_tips = models.TextField(max_length=1000, help_text="Enter a few care tips for the plant")
@@ -78,8 +80,6 @@ class Plant(models.Model):
 
 class PlantInstance(models.Model):
     """Model representing an instance of a type of plant."""
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4,
-                          help_text="Unique ID for this particular plant across whole nursery")
     plant = models.ForeignKey(Plant, on_delete=models.RESTRICT, null=True)
     
     nickname = models.CharField(max_length=200, unique=True)
@@ -90,6 +90,10 @@ class PlantInstance(models.Model):
     
     purchased = models.DateField(null=True, blank=True)
     due_watered = models.DateField(null=True, blank=True)
+
+    
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4,
+                          help_text="Unique ID for this particular plant across whole nursery")
 
     WATERED_STATUS = (
         ('p', 'purchased'),

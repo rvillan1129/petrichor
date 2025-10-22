@@ -72,11 +72,17 @@ class Plant(models.Model):
 
     def __str__(self):
         """String for representing the Model object."""
-        return self.scientific_name
+        return f'{self.scientific_name}'
 
     def get_absolute_url(self):
         """Returns the URL to access a detail record for this plant."""
         return reverse('plant-detail', args=[str(self.id)])
+    
+    def display_common_name(self):
+        """Create a string for common names. This is required to display common names in Admin."""
+        return ', '.join(CommonName.name for CommonName in self.common_name.all()[:3])
+
+    display_common_name.short_description = 'Common Names'
 
 class PlantInstance(models.Model):
     """Model representing an instance of a type of plant."""
@@ -114,7 +120,7 @@ class PlantInstance(models.Model):
 
     def __str__(self):
         """String for representing the Model object."""
-        return f'{self.id} ({self.plant.scientific_name})'
+        return f'{self.nickname} ({self.plant.scientific_name}) {self.id}'
     
 class Location(models.Model):
     """Model representing a Location (e.g. Living Room, Kitchen, etc.)"""

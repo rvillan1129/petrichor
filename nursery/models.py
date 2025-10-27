@@ -97,10 +97,6 @@ class PlantInstance(models.Model):
     purchased = models.DateField(null=True, blank=True)
     due_watered = models.DateField(null=True, blank=True)
 
-    
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4,
-                          help_text="Unique ID for this particular plant across whole nursery")
-
     WATERED_STATUS = (
         ('p', 'purchased'),
         ('w', 'watered'),
@@ -115,12 +111,21 @@ class PlantInstance(models.Model):
         help_text='plant watered status',
     )
 
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4,
+                          help_text="Unique ID for this particular plant across whole nursery")
+
     class Meta:
         ordering = ['due_watered']
 
     def __str__(self):
         """String for representing the Model object."""
         return f'{self.nickname} ({self.plant.scientific_name}) {self.id}'
+    
+    def display_common_name(self):
+        """Create a string for common names. This is required to display common names in Admin."""
+        return ', '.join(CommonName.name for CommonName in self.plant.common_name.all()[:3])
+
+    display_common_name.short_description = 'Common Names'
     
 class Location(models.Model):
     """Model representing a Location (e.g. Living Room, Kitchen, etc.)"""

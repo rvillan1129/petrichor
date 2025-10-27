@@ -11,16 +11,28 @@ from .models import CommonName, Plant, PlantInstance, Location
 class CommonNameAdmin(admin.ModelAdmin):
     pass
 
+class PlantInstanceInline(admin.StackedInline):
+    model = PlantInstance
+    extra = 0
+    fields = ['nickname', 'location', ('purchased', 'due_watered'), 'status', 'id']
+    readonly_fields = ['nickname', 'location', 'purchased', 'due_watered', 'status', 'id']
+
 # Register the Admin classes for Plant using the decorator
 @admin.register(Plant)
 class PlantAdmin(admin.ModelAdmin):
     list_display = ('scientific_name', 'display_common_name', 'water', 'sun', 'description', 'care_tips')
-         
+
+    fields = [('scientific_name', 'common_name'), ('water', 'sun'), 'description', 'care_tips']
+
+    inlines = [PlantInstanceInline]
 
 # Register the Admin classes for PlantInstance using the decorator
 @admin.register(PlantInstance)
 class PlantInstanceAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('nickname', 'plant', 'display_common_name', 'location', 'status', 'due_watered')
+    list_filter = ('status', 'due_watered')
+
+    fields = [('nickname', 'plant'), 'location', ('purchased', 'due_watered'), 'status', 'id']
 
 # Register the Admin classes for Location using the decorator
 @admin.register(Location)

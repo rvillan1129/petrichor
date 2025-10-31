@@ -1,0 +1,17 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>Petrichor Home</h1>
+  <p>
+    Welcome to Petrichor, a website developed by
+    <em>the Groundskeeper</em>!
+  </p>
+  <h2>Dynamic content</h2>
+  <p>The nursery has the following record counts:</p>
+  <ul>
+    <li><strong>Type of Plants:</strong> {{ num_plants }}</li>
+    <li><strong>Total Count:</strong> {{ num_instances }}</li>
+    <li><strong>Plants purchased:</strong> {{ num_instances_purchased }}</li>
+    <li><strong>Locations:</strong> {{ num_locations }}</li>
+  </ul>
+{% endblock %}

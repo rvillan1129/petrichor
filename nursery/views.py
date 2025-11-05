@@ -27,3 +27,6 @@ def index(request):
 
 class PlantListView(generic.ListView):
     model = Plant
+
+class PlantDetailView(generic.DetailView):
+    model = Plant

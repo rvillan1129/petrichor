@@ -1,0 +1,29 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>Plant: {{ plant.scientific_name }}</h1>
+
+  <p><strong>Common Names:</strong> {{ plant.common_name.all|join:", " }}</p>
+  <p><strong>Description:</strong> {{ plant.description }}</p>
+  <p><strong>Care Tips::</strong> {{ plant.care_tips }}</p>
+  <p><strong>Water:</strong> {{ plant.water }}</p>
+  <p><strong>Sun:</strong> {{ plant.sun }}</p>
+
+
+  <div style="margin-left:20px;margin-top:20px">
+    <h4>Plant Instances</h4>
+
+    {% for purchasedPlant in plant.plantinstance_set.all %}
+      <hr />
+      <p
+        class="{% if purchasedPlant.status == 'w' %}text-success{% elif purchasedPlant.status == 'n' %}text-danger{% else %}text-warning{% endif %}">
+        {{ purchasedPlant.get_status_display }}
+      </p>
+      {% if purchasedPlant.status != 'w' %}
+        <p><strong>Due to be watered:</strong> {{ purchasedPlant.due_watered }}</p>
+      {% endif %}
+      <p><strong>Location:</strong> {{ purchasedPlant.location }}</p>
+      <p class="text-muted"><strong>Id:</strong> {{ purchasedPlant.id }}</p>
+    {% endfor %}
+  </div>
+{% endblock %}

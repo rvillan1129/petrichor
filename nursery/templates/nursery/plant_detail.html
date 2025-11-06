@@ -1,17 +1,17 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-  <h1>Plant: {{ plant.scientific_name }}</h1>
+  <h1>Plant Type: {{ plant.scientific_name }}</h1>
 
   <p><strong>Common Names:</strong> {{ plant.common_name.all|join:", " }}</p>
   <p><strong>Description:</strong> {{ plant.description }}</p>
-  <p><strong>Care Tips::</strong> {{ plant.care_tips }}</p>
-  <p><strong>Water:</strong> {{ plant.water }}</p>
-  <p><strong>Sun:</strong> {{ plant.sun }}</p>
+  <p><strong>Care Tips:</strong> {{ plant.care_tips }}</p>
+  <p><strong>Water:</strong> {{ plant.get_water_display }}</p>
+  <p><strong>Sun:</strong> {{ plant.get_sun_display }}</p>
 
 
   <div style="margin-left:20px;margin-top:20px">
-    <h4>Plant Instances</h4>
+    <h4>List of All Plants Owned of This Type</h4>
 
     {% for purchasedPlant in plant.plantinstance_set.all %}
       <hr />
@@ -22,8 +22,8 @@
       {% if purchasedPlant.status != 'w' %}
         <p><strong>Due to be watered:</strong> {{ purchasedPlant.due_watered }}</p>
       {% endif %}
+      <p><strong>Nickname:</strong> {{ purchasedPlant.nickname }}</p>
       <p><strong>Location:</strong> <a href="{{ purchasedPlant.location.get_absolute_url }}">{{ purchasedPlant.location }}</a></p>
-      <p class="text-muted"><strong>Id:</strong> {{ purchasedPlant.id }}</p>
     {% endfor %}
   </div>
 {% endblock %}

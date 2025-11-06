@@ -5,7 +5,7 @@
 
 
   <div style="margin-left:20px;margin-top:20px">
-    <h4>Plant Instances</h4>
+    <h4>All Plants in this Room</h4>
 
     {% for purchasedPlant in location.plantinstance_set.all %}
       <hr />
@@ -16,8 +16,7 @@
       {% if purchasedPlant.status != 'w' %}
         <p><strong>Due to be watered:</strong> {{ purchasedPlant.due_watered }}</p>
       {% endif %}
-      <p><strong>Location:</strong> {{ purchasedPlant.location }}</p>
-      <p class="text-muted"><strong>Id:</strong> {{ purchasedPlant.id }}</p>
+      <p><strong>Name:</strong> {{ purchasedPlant.nickname }} ({{ purchasedPlant.plant.scientific_name }})</p>
     {% endfor %}
   </div>
 {% endblock %}

@@ -27,6 +27,14 @@ def index(request):
 
 class PlantListView(generic.ListView):
     model = Plant
+    paginate_by = 2
 
 class PlantDetailView(generic.DetailView):
     model = Plant
+
+class LocationListView(generic.ListView):
+    model = Location
+    paginate_by = 2
+
+class LocationDetailView(generic.DetailView):
+    model = Location

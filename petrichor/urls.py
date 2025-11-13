@@ -30,3 +30,8 @@ urlpatterns = [
     # redirect root URL (i.e., 127.0.0.1:8000) to the URL 127.0.0.1:8000/nursery/
     path('', RedirectView.as_view(url='nursery/', permanent=True)),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+# Add Django site authentication urls (for login, logout, password management)
+urlpatterns += [
+    path('accounts/', include('django.contrib.auth.urls')),
+]

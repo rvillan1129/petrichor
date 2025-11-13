@@ -15,11 +15,17 @@ def index(request):
     # The 'all()' is implied by default.
     num_locations = Location.objects.count()
 
+    # Number of visits to this view, as counted in the session variable.
+    num_visits = request.session.get('num_visits', 0)
+    num_visits += 1
+    request.session['num_visits'] = num_visits
+
     context = {
         'num_plants': num_plants,
         'num_instances': num_instances,
         'num_instances_purchased': num_instances_purchased,
         'num_locations': num_locations,
+        'num_visits': num_visits,
     }
 
     # Render the HTML template index.html with the data in the context variable

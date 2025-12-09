@@ -3,6 +3,9 @@ from django.urls import reverse # Used in get_absolute_url() to get URL for spec
 from django.db.models import UniqueConstraint # Constrains fields to unique values
 from django.db.models.functions import Lower # Returns lower cased value of field
 import uuid # Required for unique plant instances
+from django.conf import settings
+from django.contrib.auth.models import User
+from datetime import date
 
 class CommonName(models.Model):
     """Model representing a plant common name."""
@@ -87,7 +90,7 @@ class Plant(models.Model):
 class PlantInstance(models.Model):
     """Model representing an instance of a type of plant."""
     plant = models.ForeignKey(Plant, on_delete=models.RESTRICT, null=True)
-    
+    customer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     nickname = models.CharField(max_length=200, unique=True)
     
     # Foreign Key used because plant can only have one location, but location can house multiple plants.
@@ -113,6 +116,11 @@ class PlantInstance(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4,
                           help_text="Unique ID for this particular plant across whole nursery")
+    
+    @property
+    def is_overdue_watered(self):
+        """Determines if the plant is overdue to be watered on due date and current date."""
+        return bool(self.due_watered and date.today() > self.due_watered)
 
     class Meta:
         ordering = ['due_watered']

@@ -29,10 +29,10 @@ class PlantAdmin(admin.ModelAdmin):
 # Register the Admin classes for PlantInstance using the decorator
 @admin.register(PlantInstance)
 class PlantInstanceAdmin(admin.ModelAdmin):
-    list_display = ('nickname', 'plant', 'display_common_name', 'location', 'status', 'due_watered')
+    list_display = ('nickname', 'plant', 'display_common_name', 'customer','location', 'status', 'due_watered')
     list_filter = ('status', 'due_watered')
 
-    fields = [('nickname', 'plant'), 'location', ('purchased', 'due_watered'), 'status', 'id']
+    fields = [('nickname', 'plant'), 'location', 'customer', ('purchased', 'due_watered'), 'status', 'id']
 
 # Register the Admin classes for Location using the decorator
 @admin.register(Location)

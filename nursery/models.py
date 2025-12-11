@@ -101,7 +101,6 @@ class PlantInstance(models.Model):
     due_watered = models.DateField(null=True, blank=True)
 
     WATERED_STATUS = (
-        ('p', 'purchased'),
         ('w', 'watered'),
         ('n', 'not watered'),
     )
@@ -110,7 +109,7 @@ class PlantInstance(models.Model):
         max_length=1,
         choices=WATERED_STATUS,
         blank=True,
-        default='p',
+        default='w',
         help_text='plant watered status',
     )
 

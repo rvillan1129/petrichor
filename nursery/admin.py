@@ -32,7 +32,8 @@ class PlantInstanceAdmin(admin.ModelAdmin):
     list_display = ('nickname', 'plant', 'display_common_name', 'customer','location', 'status', 'due_watered')
     list_filter = ('status', 'due_watered')
 
-    fields = [('nickname', 'plant'), 'location', 'customer', ('purchased', 'due_watered'), 'status', 'id']
+    fields = ['plant', 'nickname', 'location', 'customer', ('purchased', 'due_watered'), 'status', 'id']
+    readonly_fields = ['id']
 
 # Register the Admin classes for Location using the decorator
 @admin.register(Location)

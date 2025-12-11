@@ -125,6 +125,8 @@ class PlantInstance(models.Model):
     class Meta:
         ordering = ['due_watered']
 
+        permissions = (("can_mark_watered", "Set plant as watered"),)
+
     def __str__(self):
         """String for representing the Model object."""
         return f'{self.nickname} ({self.plant.scientific_name}) {self.id}'

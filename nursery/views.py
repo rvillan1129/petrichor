@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from .models import Plant, PlantInstance, Location, CommonName
 from django.views import generic
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 def index(request):
     """View function for home page of site."""
@@ -44,3 +45,16 @@ class LocationListView(generic.ListView):
 
 class LocationDetailView(generic.DetailView):
     model = Location
+
+class WateredPlantsByUserListView(LoginRequiredMixin,generic.ListView):
+    """Generic class-based view listing watered plants by current user."""
+    model = PlantInstance
+    template_name = 'nursery/plantinstance_list_watered_user.html'
+    paginate_by = 10
+
+    def get_queryset(self):
+        return (
+            PlantInstance.objects.filter(customer=self.request.user)
+            .filter(status__exact='w')
+            .order_by('due_watered')
+        )

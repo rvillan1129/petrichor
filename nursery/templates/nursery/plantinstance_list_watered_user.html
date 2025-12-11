@@ -1,0 +1,19 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+    <h1>My Watered Plants</h1>
+
+    {% if plantinstance_list %}
+    <ul>
+
+      {% for plantinst in plantinstance_list %}
+      <li class="{% if plantinst.is_overdue_watered %}text-danger{% endif %}">
+        <a href="{% url 'plant-detail' plantinst.plant.pk %}">{{ plantinst.nickname }}</a> ({{ plantinst.due_watered }})
+      </li>
+      {% endfor %}
+    </ul>
+
+    {% else %}
+      <p>There are no plants watered.</p>
+    {% endif %}
+{% endblock %}

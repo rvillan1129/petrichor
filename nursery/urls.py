@@ -12,3 +12,7 @@ urlpatterns = [
 urlpatterns += [
     path('myplants/', views.WateredPlantsByUserListView.as_view(), name='my-watered'),
 ]
+
+urlpatterns += [
+    path('plant/<uuid:pk>/renew_watered/', views.renew_watered_associate, name='renew-watered-associate'),
+]

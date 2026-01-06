@@ -54,7 +54,7 @@ class LocationDetailView(generic.DetailView):
 class PlantsByUserListView(LoginRequiredMixin,generic.ListView):
     """Generic class-based view listing watered plants by current user."""
     model = PlantInstance
-    template_name = 'nursery/plantinstance_list_watered_user.html'
+    template_name = 'nursery/plantinstance_list_plants_user.html'
     paginate_by = 10
 
     def get_queryset(self):

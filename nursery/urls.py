@@ -10,7 +10,9 @@ urlpatterns = [
 ]
 
 urlpatterns += [
-    path('myplants/', views.WateredPlantsByUserListView.as_view(), name='my-watered'),
+    path('myplants/', views.PlantsByUserListView.as_view(), name='my-plants'),
+    path('mywateredplants/', views.WateredPlantsByUserListView.as_view(), name='my-watered'),
+    path('myduewateredplants/', views.DueWateredPlantsByUserListView.as_view(), name='my-due-watered')
 ]
 
 urlpatterns += [

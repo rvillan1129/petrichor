@@ -1,7 +1,7 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-    <h1>My Watered Plants</h1>
+    <h1>My Plants</h1>
 
     {% if plantinstance_list %}
     <ul>
@@ -15,6 +15,6 @@
     </ul>
 
     {% else %}
-      <p>There are no plants due watered.</p>
+      <p>There are no plants.</p>
     {% endif %}
 {% endblock %}

@@ -25,7 +25,9 @@
               <li><a href="{% url 'locations' %}">All Locations</a></li>
               {% if user.is_authenticated %}
                 <li>User: {{ user.get_username }}</li>
-                <li><a href="{% url 'my-watered' %}">My Watered</a></li>
+                <li><a href="{% url 'my-plants' %}">My Plants</a></li>
+                <li><a href="{% url 'my-due-watered' %}">Dry Plants</a></li>
+                <li><a href="{% url 'my-watered' %}">Watered Plants</a></li>
                 <li>
                   <form id="logout-form" method="post" action="{% url 'logout' %}">
                     {% csrf_token %}

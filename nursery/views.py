@@ -51,6 +51,18 @@ class LocationListView(generic.ListView):
 class LocationDetailView(generic.DetailView):
     model = Location
 
+class PlantsByUserListView(LoginRequiredMixin,generic.ListView):
+    """Generic class-based view listing watered plants by current user."""
+    model = PlantInstance
+    template_name = 'nursery/plantinstance_list_watered_user.html'
+    paginate_by = 10
+
+    def get_queryset(self):
+        return (
+            PlantInstance.objects.filter(customer=self.request.user)
+            .order_by('due_watered')
+        )
+
 class WateredPlantsByUserListView(LoginRequiredMixin,generic.ListView):
     """Generic class-based view listing watered plants by current user."""
     model = PlantInstance
@@ -61,6 +73,19 @@ class WateredPlantsByUserListView(LoginRequiredMixin,generic.ListView):
         return (
             PlantInstance.objects.filter(customer=self.request.user)
             .filter(status__exact='w')
+            .order_by('due_watered')
+        )
+    
+class DueWateredPlantsByUserListView(LoginRequiredMixin,generic.ListView):
+    """Generic class-based view listing plants due watered by current user."""
+    model = PlantInstance
+    template_name = 'nursery/plantinstance_list_due_watered_user.html'
+    paginate_by = 10
+
+    def get_queryset(self):
+        return (
+            PlantInstance.objects.filter(customer=self.request.user)
+            .filter(status__exact='n')
             .order_by('due_watered')
         )
 

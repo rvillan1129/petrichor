@@ -90,6 +90,7 @@ class Plant(models.Model):
 class PlantInstance(models.Model):
     """Model representing an instance of a type of plant."""
     plant = models.ForeignKey(Plant, on_delete=models.RESTRICT, null=True)
+    ## change to owner
     customer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     nickname = models.CharField(max_length=200, unique=True)
     
@@ -123,8 +124,6 @@ class PlantInstance(models.Model):
 
     class Meta:
         ordering = ['due_watered']
-
-        permissions = (("can_mark_watered", "Set plant as watered"),)
 
     def __str__(self):
         """String for representing the Model object."""

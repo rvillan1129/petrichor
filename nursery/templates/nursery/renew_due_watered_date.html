@@ -1,0 +1,15 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>Water: {{plant_instance.nickname}} ({{ plant_instance.plant.scientific_name }})</h1>
+  <p>Owner: {{ plant_instance.customer }}</p>
+  <p {% if plant_instance.is_overdue_watered %} class="text-danger"{% endif %} >Due watered date: {{ plant_instance.due_watered }}</p>
+
+  <form action="" method="post">
+    {% csrf_token %}
+    <table>
+    {{ form.as_table }}
+    </table>
+    <input type="submit" value="Submit">
+  </form>
+{% endblock %}

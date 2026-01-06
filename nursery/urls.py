@@ -14,5 +14,5 @@ urlpatterns += [
 ]
 
 urlpatterns += [
-    path('plant/<uuid:pk>/renew_watered/', views.renew_watered_associate, name='renew-watered-associate'),
+    path('plant/<uuid:pk>/renew_due_watered/', views.renew_due_watered_date, name='renew-due-watered-date'),
 ]

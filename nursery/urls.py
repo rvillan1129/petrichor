@@ -18,3 +18,8 @@ urlpatterns += [
 urlpatterns += [
     path('plant/<uuid:pk>/renew_due_watered/', views.renew_due_watered_date, name='renew-due-watered-date'),
 ]
+
+urlpatterns += [ 
+    path('plant/create/', views.PlantCreate.as_view(), name='plant-create'), 
+    path('plant/<int:pk>/update/', views.PlantUpdate.as_view(), name='plant-update'), 
+    path('plant/<int:pk>/delete/', views.PlantDelete.as_view(), name='plant-delete'), ]

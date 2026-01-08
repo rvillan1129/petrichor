@@ -120,3 +120,32 @@ def renew_due_watered_date(request, pk):
     }
 
     return render(request, 'nursery/renew_due_watered_date.html', context)
+
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.contrib.auth.mixins import PermissionRequiredMixin 
+from django.urls import reverse_lazy 
+from .models import Plant 
+
+class PlantCreate(PermissionRequiredMixin, CreateView): 
+    model = Plant 
+    fields = ['scientific_name', 'common_name', 'water', 'sun', 'description', 'care_tips'] 
+    initial = {'water': 'r', 'sun': 'p'}
+    permission_required = 'nursery.add_plant'
+
+class PlantUpdate(PermissionRequiredMixin, UpdateView): 
+    model = Plant 
+    # Not recommended (potential security issue if more fields added) 
+    fields = '__all__' 
+    permission_required = 'nursery.change_plant' 
+    
+class PlantDelete(PermissionRequiredMixin, DeleteView): 
+    model = Plant 
+    success_url = reverse_lazy('plants') 
+    permission_required = 'nursery.delete_plant' 
+    
+    def form_valid(self, form): 
+        try: 
+            self.object.delete() 
+            return HttpResponseRedirect(self.success_url) 
+        except Exception as e: 
+            return HttpResponseRedirect( reverse("plant-delete", kwargs={"pk": self.object.pk}) )

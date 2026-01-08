@@ -11,3 +11,15 @@
   padding: 0;
   margin: 0;
 }
+
+a:link {
+  color: white;
+}
+
+a:visited {
+  color: beige;
+}
+
+a:hover {
+  color: black;
+}

@@ -14,15 +14,24 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
   </head>
-  <body>
+  <body style="background-color: rgb(100, 47, 31); color: beige;">
     <div class="container-fluid">
       <div class="row">
         <div class="col-sm-2">
           {% block sidebar %}
-            <ul class="sidebar-nav">
+            <ul class="sidebar-nav" style="background-color: brown;">
               <li><a href="{% url 'index' %}">Home</a></li>
-              <li><a href="{% url 'plants' %}">All plants</a></li>
-              <li><a href="{% url 'locations' %}">All Locations</a></li>
+              {% if user.is_staff %} 
+              <hr> 
+              <ul class="sidebar-nav">
+                <li>Staff</li> 
+                <li><a href="{% url 'plants' %}">All plants</a></li>
+                <li><a href="{% url 'locations' %}">All Locations</a></li>
+                {% if perms.catalog.add_author %} 
+                <li><a href="{% url 'plant-create' %}">Create plant</a></li> 
+                {% endif %} 
+              </ul> 
+              {% endif %}
               {% if user.is_authenticated %}
                 <li>User: {{ user.get_username }}</li>
                 <li><a href="{% url 'my-plants' %}">My Plants</a></li>

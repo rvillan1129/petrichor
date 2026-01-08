@@ -1,0 +1,24 @@
+{% extends "base_generic.html" %} 
+
+{% block content %} 
+
+<h1>Delete Plant: {{ plant }}</h1> 
+
+{% if plant.plantinstance_set.all %} 
+<p>You can't delete this plant until all their plant instances have been deleted:</p> 
+<ul> 
+    {% for plant in plant.plantinstance_set.all %} 
+    <li>
+        <a href="{% url 'plant-detail' plant.pk %}">{{plant}}</a> ({{plant.plantinstance_set.all.count}})
+    </li> 
+    {% endfor %} 
+</ul> 
+{% else %} 
+<p>Are you sure you want to delete the plant?</p> 
+<form action="" method="POST"> 
+    {% csrf_token %} 
+    <input type="submit" action="" value="Yes, delete."> 
+</form> 
+{% endif %} 
+
+{% endblock %}

@@ -27,3 +27,19 @@
     {% endfor %}
   </div>
 {% endblock %}
+
+{% block sidebar %} 
+  {{ block.super }} 
+  {% if perms.nursery.change_plant or perms.nursery.delete_plant %} 
+  <hr> 
+    <ul class="sidebar-nav"> 
+      {% if perms.nursery.change_plant %} 
+        <li><a href="{% url 'plant-update' plant.id %}">Update plant</a></li> 
+      {% endif %}
+       
+      {% if not plant.plantinstance_set.all and perms.nursery.delete_plant %} 
+        <li><a href="{% url 'plant-delete' plant.id %}">Delete plant</a></li> 
+      {% endif %} 
+    </ul> 
+  {% endif %} 
+{% endblock %}

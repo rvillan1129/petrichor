@@ -1,12 +1,14 @@
 from django.shortcuts import render, get_object_or_404
 from .models import Plant, PlantInstance, Location, CommonName
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views import generic
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required, permission_required
 from django.http import HttpResponseRedirect
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 import datetime
 from nursery.forms import RenewDueWateredDateForm
+from django.db.models import Q
 
 def index(request):
     """View function for home page of site."""
@@ -39,10 +41,13 @@ def index(request):
 
 class PlantListView(generic.ListView):
     model = Plant
-    paginate_by = 2
+    paginate_by = 10
 
 class PlantDetailView(generic.DetailView):
     model = Plant
+
+class PlantInstanceDetailView(generic.DetailView):
+    model = PlantInstance
 
 class LocationListView(generic.ListView):
     model = Location
@@ -51,7 +56,7 @@ class LocationListView(generic.ListView):
 class LocationDetailView(generic.DetailView):
     model = Location
 
-class PlantsByUserListView(LoginRequiredMixin,generic.ListView):
+class PlantInstanceByUserListView(LoginRequiredMixin,generic.ListView):
     """Generic class-based view listing watered plants by current user."""
     model = PlantInstance
     template_name = 'nursery/plantinstance_list_plants_user.html'
@@ -82,10 +87,11 @@ class DueWateredPlantsByUserListView(LoginRequiredMixin,generic.ListView):
     template_name = 'nursery/plantinstance_list_due_watered_user.html'
     paginate_by = 10
 
+    # should we get plantinstances with just not-watered status?
     def get_queryset(self):
         return (
             PlantInstance.objects.filter(customer=self.request.user)
-            .filter(status__exact='n')
+            .filter(due_watered__lte=datetime.date.today() )
             .order_by('due_watered')
         )
 
@@ -103,11 +109,11 @@ def renew_due_watered_date(request, pk):
         # Check if the form is valid:
         if form.is_valid():
             # process the data in form.cleaned_data as required (here we just write it to the model due_watered field)
-            plant_instance.due_back = form.cleaned_data['renewal_date']
+            plant_instance.due_watered = form.cleaned_data['renewal_date']
             plant_instance.save()
 
             # redirect to a new URL:
-            return HttpResponseRedirect(reverse('my-watered'))
+            return HttpResponseRedirect(reverse('my-plants'))
 
     # If this is a GET (or any other method) create the default form.
     else:
@@ -120,11 +126,7 @@ def renew_due_watered_date(request, pk):
     }
 
     return render(request, 'nursery/renew_due_watered_date.html', context)
-
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.contrib.auth.mixins import PermissionRequiredMixin 
-from django.urls import reverse_lazy 
-from .models import Plant 
+ 
 
 class PlantCreate(PermissionRequiredMixin, CreateView): 
     model = Plant 
@@ -149,3 +151,29 @@ class PlantDelete(PermissionRequiredMixin, DeleteView):
             return HttpResponseRedirect(self.success_url) 
         except Exception as e: 
             return HttpResponseRedirect( reverse("plant-delete", kwargs={"pk": self.object.pk}) )
+        
+class PlantInstanceCreate(PermissionRequiredMixin, CreateView): 
+    model = PlantInstance 
+    fields = ['plant', 'customer', 'nickname', 'location', 'purchased', 'due_watered', 'status']
+    proposed_due_watered_date = datetime.date.today() + datetime.timedelta(weeks=2) 
+    initial = {'status': 'n', 
+               'purchased': datetime.date.today(),
+               'due_watered': proposed_due_watered_date}
+    permission_required = 'nursery.add_plantinstance'
+
+class PlantInstanceUpdate(PermissionRequiredMixin, UpdateView):
+    model = PlantInstance 
+    fields = ['plant', 'customer', 'nickname', 'location', 'purchased', 'due_watered', 'status'] 
+    permission_required = 'nursery.change_plantinstance' 
+
+class PlantInstanceDelete(PermissionRequiredMixin, DeleteView): 
+    model = PlantInstance 
+    success_url = reverse_lazy('my-plants') 
+    permission_required = 'nursery.delete_plantinstance' 
+    
+    def form_valid(self, form): 
+        try: 
+            self.object.delete() 
+            return HttpResponseRedirect(self.success_url) 
+        except Exception as e: 
+            return HttpResponseRedirect( reverse("plant-instance-delete", kwargs={"pk": self.object.pk}) )

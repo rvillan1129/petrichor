@@ -20,24 +20,9 @@
         <div class="col-sm-2">
           {% block sidebar %}
             <ul class="sidebar-nav" style="background-color: brown;">
-              <li><a href="{% url 'index' %}">Home</a></li>
-              {% if user.is_staff %} 
-              <hr> 
-              <ul class="sidebar-nav">
-                <li>Staff</li> 
-                <li><a href="{% url 'plants' %}">All plants</a></li>
-                <li><a href="{% url 'locations' %}">All Locations</a></li>
-                {% if perms.catalog.add_author %} 
-                <li><a href="{% url 'plant-create' %}">Create plant</a></li> 
-                {% endif %} 
-              </ul> 
-              {% endif %}
               {% if user.is_authenticated %}
-                <li>User: {{ user.get_username }}</li>
-                <li><a href="{% url 'my-plants' %}">My Plants</a></li>
-                <li><a href="{% url 'my-due-watered' %}">Dry Plants</a></li>
-                <li><a href="{% url 'my-watered' %}">Watered Plants</a></li>
-                <li>
+              <li>User: {{ user.get_username }}</li>
+              <li>
                   <form id="logout-form" method="post" action="{% url 'logout' %}">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-link">Logout</button>
@@ -45,6 +30,25 @@
                 </li>
               {% else %}
                 <li><a href="{% url 'login' %}?next={{ request.path }}">Login</a></li>
+              {% endif %}
+              <li><a href="{% url 'index' %}">Home</a></li>
+              {% if user.is_authenticated %}
+                <li><a href="{% url 'my-plants' %}">My Plants</a></li>
+                <li><a href="{% url 'my-due-watered' %}">Dry Plants</a></li>
+                <hr>
+                <li>Actions</li>
+                <li><a href="{% url 'plant-instance-create' %}">Add Plant Instance</a></li>
+              {% endif %}
+              {% if user.is_staff %} 
+              <hr> 
+              <ul class="sidebar-nav">
+                <li>Staff</li> 
+                <li><a href="{% url 'plants' %}">All plants</a></li>
+                <li><a href="{% url 'locations' %}">All Locations</a></li>
+                {% if perms.nursery.add_plant %} 
+                <li><a href="{% url 'plant-create' %}">Create plant</a></li> 
+                {% endif %} 
+              </ul> 
               {% endif %}
             </ul>
           {% endblock %}

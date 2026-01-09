@@ -120,7 +120,14 @@ class PlantInstance(models.Model):
     @property
     def is_overdue_watered(self):
         """Determines if the plant is overdue to be watered on due date and current date."""
-        return bool(self.due_watered and date.today() > self.due_watered)
+
+        return bool(self.due_watered and (date.today() >= self.due_watered))
+
+    @property
+    def is_not_watered(self):
+        """Determines if the plant has not been watered."""
+
+        return bool(self.status and (self.status == 'n'))
 
     class Meta:
         ordering = ['due_watered']
@@ -132,6 +139,10 @@ class PlantInstance(models.Model):
     def display_common_name(self):
         """Create a string for common names. This is required to display common names in Admin."""
         return ', '.join(CommonName.name for CommonName in self.plant.common_name.all()[:3])
+    
+    def get_absolute_url(self):
+        """Returns the URL to access a detail record for this plant instance"""
+        return reverse('plant-instance-detail', args=[str(self.id)])
 
     display_common_name.short_description = 'Common Names'
     

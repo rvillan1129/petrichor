@@ -8,8 +8,10 @@
 
       {% for plantinst in plantinstance_list %}
       <li class="{% if plantinst.is_overdue_watered %}text-danger{% endif %}">
-        <a href="{% url 'plant-detail' plantinst.plant.pk %}">{{ plantinst.nickname }}</a> ({{ plantinst.due_watered }}) 
-        {% if plantinst.is_overdue_watered %}- <a href="{% url 'renew-due-watered-date' plantinst.id %}">Water</a>{% endif %}
+        <a href="{% url 'plant-instance-detail' plantinst.pk %}">{{ plantinst.nickname }}</a> ({{ plantinst.due_watered }}) 
+        {% if plantinst.is_not_watered %}- <a href="{% url 'renew-due-watered-date' plantinst.id %}">Water</a>
+        {% else %}- <span class="text-success">watered</span>
+        {% endif %}
       </li>
       {% endfor %}
     </ul>

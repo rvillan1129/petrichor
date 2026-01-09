@@ -1,0 +1,55 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>{{ plantinstance.nickname }} (<a href="{% url 'plant-detail' plantinstance.plant.pk %}">{{ plantinstance.plant }}</a>)</h1>
+  <h2>Owner: {{ plantinstance.customer }}</h2>
+
+  <p><strong>Common Names:</strong> {{ plantinstance.plant.common_name.all|join:", " }}</p>
+  <p><strong>location:</strong> {{ plantinstance.location }}</p>
+  <p><strong>Purchased:</strong> {{ plantinstance.purchased }}</p>
+  <p>
+    <strong>Due Watered:</strong> 
+    <span class="{% if not plantinstance.is_overdue_watered %}text-success{% elif plantinstance.is_overdue_watered %}text-danger{% endif %}">
+      {{ plantinstance.due_watered }}
+    </span>
+  </p>
+  <p>
+    <strong>Watered Status:</strong> 
+    <span class="{% if not plantinstance.is_not_watered %}text-success{% elif plantinstance.is_not_watered %}text-danger{% endif %}">
+      {{ plantinstance.get_status_display }}
+    </span>
+  </p>
+
+
+  <!-- <div style="margin-left:20px;margin-top:20px">
+    <h4>List of All Plants Owned of This Type</h4>
+
+    {% for purchasedPlant in plant.plantinstance_set.all %}
+      <hr />
+      <p
+        class="{% if purchasedPlant.status == 'w' %}text-success{% elif purchasedPlant.status == 'n' %}text-danger{% else %}text-warning{% endif %}">
+        {{ purchasedPlant.get_status_display }}
+      </p>
+      {% if purchasedPlant.status != 'w' %}
+        <p><strong>Due to be watered:</strong> {{ purchasedPlant.due_watered }}</p>
+      {% endif %}
+      <p><strong>Nickname:</strong> {{ purchasedPlant.nickname }}</p>
+      <p><strong>Location:</strong> <a href="{{ purchasedPlant.location.get_absolute_url }}">{{ purchasedPlant.location }}</a></p>
+    {% endfor %}
+  </div> -->
+{% endblock %}
+
+{% block sidebar %} 
+  {{ block.super }} 
+  {% if perms.nursery.change_plantinstance or perms.nursery.delete_plantinstance%} 
+  <hr> 
+    <ul class="sidebar-nav"> 
+      {% if perms.nursery.change_plantinstance %} 
+        <li><a href="{% url 'plant-instance-update' plantinstance.id %}">Update plant instance</a></li> 
+      {% endif %}
+      {% if perms.nursery.delete_plantinstance %} 
+        <li><a href="{% url 'plant-instance-delete' plantinstance.id %}">Delete plant instance</a></li> 
+      {% endif %}
+    </ul> 
+  {% endif %} 
+{% endblock %}

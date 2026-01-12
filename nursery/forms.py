@@ -1,7 +1,7 @@
 import datetime
-
 from django import forms
-
+from django.forms import ModelForm
+from nursery.models import PlantInstance
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
@@ -21,3 +21,14 @@ class RenewDueWateredDateForm(forms.Form):
 
         # Remember to always return the cleaned data.
         return data
+    
+# class CreatePlantInstanceForm(ModelForm):
+    
+#     def check_unique_nickname_by_user(self):
+#         data = self.cleaned_data['nickname']
+
+
+
+#     class Meta: 
+#         model = PlantInstance
+#         fields = ['plant', 'customer', 'nickname', 'location', 'purchased', 'due_watered', 'status']

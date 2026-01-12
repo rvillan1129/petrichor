@@ -92,14 +92,14 @@ class PlantInstance(models.Model):
     plant = models.ForeignKey(Plant, on_delete=models.RESTRICT, null=True)
     ## change to owner
     customer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-    nickname = models.CharField(max_length=200, unique=True)
+    nickname = models.CharField(max_length=200, unique=True, help_text='what do you call your plant child')
     
     # Foreign Key used because plant can only have one location, but location can house multiple plants.
     # location as a string rather than object because it hasn't been declared yet in file.
-    location = models.ForeignKey('Location', on_delete=models.RESTRICT, null=True)
+    location = models.ForeignKey('Location', on_delete=models.RESTRICT, null=True, help_text='location plant will live')
     
-    purchased = models.DateField(null=True, blank=True)
-    due_watered = models.DateField(null=True, blank=True)
+    purchased = models.DateField(null=True, blank=True, help_text='date plant was purchase')
+    due_watered = models.DateField(null=True, blank=True, help_text='next watering date')
 
     WATERED_STATUS = (
         ('w', 'watered'),

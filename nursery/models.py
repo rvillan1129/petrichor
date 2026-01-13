@@ -92,7 +92,7 @@ class PlantInstance(models.Model):
     plant = models.ForeignKey(Plant, on_delete=models.RESTRICT, null=True)
     ## change to owner
     customer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-    nickname = models.CharField(max_length=200, unique=True, help_text='what do you call your plant child')
+    nickname = models.CharField(max_length=200, help_text='what do you call your plant child')
     
     # Foreign Key used because plant can only have one location, but location can house multiple plants.
     # location as a string rather than object because it hasn't been declared yet in file.
@@ -131,6 +131,9 @@ class PlantInstance(models.Model):
 
     class Meta:
         ordering = ['due_watered']
+        constraints = [
+            models.UniqueConstraint(fields=['customer', 'nickname'], name='unique_plantinstance_nickname_per_customer')
+        ]
 
     def __str__(self):
         """String for representing the Model object."""

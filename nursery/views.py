@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 import datetime
-from nursery.forms import RenewDueWateredDateForm, CreatePlantInstanceForm
+from nursery.forms import RenewDueWateredDateForm
 from django.db.models import Q
 
 def index(request):
@@ -159,45 +159,6 @@ class PlantInstanceCreate(PermissionRequiredMixin, CreateView):
                'purchased': datetime.date.today(),
                'due_watered': proposed_due_watered_date}
     permission_required = 'nursery.add_plantinstance'
-
-# @login_required
-# @permission_required('nursery.add_plantinstance', raise_exception=True)
-# this view should query data base for all instances created by user for provided nickname
-# nickname should be unique per user, not per app
-# def create_plant_instance(request, CreateView):
-#     """View function for creating a new PlantInstance."""
-#     # plant_instance = PlantInstance
-
-#     # If this is a POST request then process the Form data
-#     if request.method == 'POST':
-
-#         # Create a form instance and populate it with data from the request (binding):
-#         form = CreatePlantInstanceForm(request.POST)
-
-#         # Check if the form is valid:
-#         if form.is_valid():
-#             # process the data in form.check_unique_nickname as required
-#             plant_instance = form.check_unique_nickname_by_user
-#             # plant_instance.save()
-
-#             # redirect to a new URL:
-#             return HttpResponseRedirect(reverse('my-plants'))
-
-#     # If this is a GET (or any other method) create the default form.
-#     else:
-#         proposed_due_watered_date = datetime.date.today() + datetime.timedelta(weeks=2) 
-#         form = CreatePlantInstanceFormForm(initial={'status': 'n', 
-#                'purchased': datetime.date.today(),
-#                'due_watered': proposed_due_watered_date})
-
-#     context = {
-#         'form': form,
-#         'plant_instance': plant_instance,
-#     }
-
-#     return render(request, 'nursery/renew_due_watered_date.html', context)
-
-
 
 class PlantInstanceUpdate(PermissionRequiredMixin, UpdateView):
     model = PlantInstance 

@@ -34,7 +34,8 @@ class CommonName(models.Model):
 
 class Plant(models.Model):
     """Model representing a type of plant."""
-    scientific_name = models.CharField(max_length=200, unique=True)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    scientific_name = models.CharField(max_length=200)
     
     # ManyToManyField used because common name can refer to different plants. Plants can have many common names.
     # CommonName class has already been defined so we can specify the object above.
@@ -72,6 +73,12 @@ class Plant(models.Model):
     description = models.TextField(max_length=1000, help_text="Enter a brief description of the plant")
     
     care_tips = models.TextField(max_length=1000, help_text="Enter a few care tips for the plant")
+
+    class Meta:
+        ordering = ['scientific_name']
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'scientific_name'], name='unique_plant_scientificname_per_owner')
+        ]
 
     def __str__(self):
         """String for representing the Model object."""

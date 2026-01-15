@@ -2,7 +2,7 @@
 
 {% block content %}
   <h1>Plant Type: {{ plant.scientific_name }}</h1>
-
+  <p><strong>Owner</strong> {{ plant.user }}</p>
   <p><strong>Common Names:</strong> {{ plant.common_name.all|join:", " }}</p>
   <p><strong>Description:</strong> {{ plant.description }}</p>
   <p><strong>Care Tips:</strong> {{ plant.care_tips }}</p>

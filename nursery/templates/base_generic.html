@@ -22,6 +22,7 @@
             <ul class="sidebar-nav" style="background-color: brown;">
               {% if user.is_authenticated %}
               <li>User: {{ user.get_username }}</li>
+              <hr>
               <li>
                   <form id="logout-form" method="post" action="{% url 'logout' %}">
                     {% csrf_token %}
@@ -33,17 +34,28 @@
               {% endif %}
               <li><a href="{% url 'index' %}">Home</a></li>
               {% if user.is_authenticated %}
-                <li><a href="{% url 'my-plants' %}">My Plants</a></li>
-                <li><a href="{% url 'my-due-watered' %}">Dry Plants</a></li>
                 <hr>
-                <li>Actions</li>
-                <li><a href="{% url 'plant-instance-create' %}">Add Plant Instance</a></li>
+                <li>Plant Instance</li>
+                <li>
+                  <ul>
+                    <li><a href="{% url 'my-plants' %}">My Plants</a></li>
+                    <li><a href="{% url 'my-due-watered' %}">Dry Plants</a></li>
+                    <li><a href="{% url 'plant-instance-create' %}">Add Plant Instance</a></li>
+                  </ul>
+                </li>
+                <li>Plant Template</li>
+                <li>
+                  <ul>
+                    <li><a href="{% url 'plants' %}">Plant templates</a></li>
+                    <li><a href="{% url 'plant-create' %}">Create Plant Template</a></li>
+                  </ul>
+                </li>
               {% endif %}
               {% if user.is_staff %} 
               <hr> 
               <ul class="sidebar-nav">
                 <li>Staff</li> 
-                <li><a href="{% url 'plants' %}">All plants</a></li>
+                <li><a href="{% url 'plants' %}">All Plant Templates</a></li>
                 <li><a href="{% url 'locations' %}">All Locations</a></li>
                 {% if perms.nursery.add_plant %} 
                 <li><a href="{% url 'plant-create' %}">Create plant</a></li> 

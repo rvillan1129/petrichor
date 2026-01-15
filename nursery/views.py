@@ -127,11 +127,15 @@ def renew_due_watered_date(request, pk):
     return render(request, 'nursery/renew_due_watered_date.html', context)
  
 
-class PlantCreate(PermissionRequiredMixin, CreateView): 
+class PlantCreate(LoginRequiredMixin,PermissionRequiredMixin, CreateView): 
     model = Plant 
-    fields = ['scientific_name', 'common_name', 'water', 'sun', 'description', 'care_tips'] 
-    initial = {'water': 'r', 'sun': 'p'}
+    fields = ['scientific_name', 'common_name','water', 'sun', 'description', 'care_tips'] 
+    initial = {'water': 'r', 'sun': 'p',}
     permission_required = 'nursery.add_plant'
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
 
 class PlantUpdate(PermissionRequiredMixin, UpdateView): 
     model = Plant 
@@ -150,15 +154,20 @@ class PlantDelete(PermissionRequiredMixin, DeleteView):
             return HttpResponseRedirect(self.success_url) 
         except Exception as e: 
             return HttpResponseRedirect( reverse("plant-delete", kwargs={"pk": self.object.pk}) )
-        
-class PlantInstanceCreate(PermissionRequiredMixin, CreateView): 
+
+
+class PlantInstanceCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView): 
     model = PlantInstance 
-    fields = ['plant', 'customer', 'nickname', 'location', 'purchased', 'due_watered', 'status']
+    fields = ['plant', 'nickname', 'location', 'purchased', 'due_watered', 'status']
     proposed_due_watered_date = datetime.date.today() + datetime.timedelta(weeks=2) 
     initial = {'status': 'n', 
                'purchased': datetime.date.today(),
                'due_watered': proposed_due_watered_date}
     permission_required = 'nursery.add_plantinstance'
+
+    def form_valid(self, form):
+        form.instance.customer = self.request.user
+        return super().form_valid(form)
 
 class PlantInstanceUpdate(PermissionRequiredMixin, UpdateView):
     model = PlantInstance 

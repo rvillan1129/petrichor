@@ -6,6 +6,7 @@
     <ul>
       {% for plant in plant_list %}
       <li>
+        {{ plant.user }} - 
         <a href="{{ plant.get_absolute_url }}">{{ plant.scientific_name }}</a>
         ({{ plant.common_name.all|join:", " }})
       </li>

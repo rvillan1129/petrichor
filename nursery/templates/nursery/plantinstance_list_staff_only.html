@@ -1,0 +1,16 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>Plant Instance List</h1>
+  {% if plantinstance_list %}
+    <ul>
+      {% for plantinst in plantinstance_list %}
+      <li>
+        {{ plantinst.customer }} - <a href="{{ plantinst.get_absolute_url }}">{{ plantinst.nickname }} ({{ plantinst.plant }})</a>
+      </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>There are no plant instances to show.</p>
+  {% endif %}
+{% endblock %}

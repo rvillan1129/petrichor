@@ -55,13 +55,16 @@
               <hr> 
               <ul class="sidebar-nav">
                 <li>Staff</li> 
-                <li><a href="{% url 'plants' %}">All Plant Templates</a></li>
-                <li><a href="{% url 'locations' %}">All Locations</a></li>
-                {% if perms.nursery.add_plant %} 
-                <li><a href="{% url 'plant-create' %}">Create plant</a></li> 
-                {% endif %} 
+                <li>
+                  <ul>
+                    <li><a href="{% url 'plants' %}">All Plant Templates</a></li>
+                    <li><a href="{% url 'plantinstances' %}">All Plant Instances</a></li>
+                    <li><a href="{% url 'locations' %}">All Locations</a></li>
+                  </ul>
+                </li>  
               </ul> 
               {% endif %}
+              <hr>
             </ul>
           {% endblock %}
         </div>

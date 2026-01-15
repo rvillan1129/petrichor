@@ -1,9 +1,9 @@
 from django.shortcuts import render, get_object_or_404
-from .models import Plant, PlantInstance, Location, CommonName
+from .models import Plant, PlantInstance, Location
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views import generic
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 import datetime
@@ -46,17 +46,25 @@ class PlantListView(generic.ListView):
 class PlantDetailView(generic.DetailView):
     model = Plant
 
-class PlantInstanceDetailView(generic.DetailView):
-    model = PlantInstance
-
 class LocationListView(generic.ListView):
     model = Location
-    paginate_by = 2
+    paginate_by = 10
 
 class LocationDetailView(generic.DetailView):
     model = Location
 
-class PlantInstanceByUserListView(LoginRequiredMixin,generic.ListView):
+class PlantInstanceStaffOnlyListView(UserPassesTestMixin, generic.ListView):
+    model = PlantInstance
+    template_name = 'nursery/plantinstance_list_staff_only.html'
+    paginate_by = 10
+
+    def test_func(self):
+        return self.request.user.is_staff
+
+class PlantInstanceDetailView(generic.DetailView):
+    model = PlantInstance
+
+class PlantInstanceByUserListView(LoginRequiredMixin, generic.ListView):
     """Generic class-based view listing watered plants by current user."""
     model = PlantInstance
     template_name = 'nursery/plantinstance_list_plants_user.html'
@@ -126,6 +134,7 @@ def renew_due_watered_date(request, pk):
 
     return render(request, 'nursery/renew_due_watered_date.html', context)
  
+## CRUD Operations ##
 
 class PlantCreate(LoginRequiredMixin,PermissionRequiredMixin, CreateView): 
     model = Plant 

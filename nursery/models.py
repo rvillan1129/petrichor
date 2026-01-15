@@ -75,7 +75,7 @@ class Plant(models.Model):
     care_tips = models.TextField(max_length=1000, help_text="Enter a few care tips for the plant")
 
     class Meta:
-        ordering = ['scientific_name']
+        ordering = ['user']
         constraints = [
             models.UniqueConstraint(fields=['user', 'scientific_name'], name='unique_plant_scientificname_per_owner')
         ]
@@ -137,7 +137,7 @@ class PlantInstance(models.Model):
         return bool(self.status and (self.status == 'n'))
 
     class Meta:
-        ordering = ['due_watered']
+        ordering = ['customer','nickname']
         constraints = [
             models.UniqueConstraint(fields=['customer', 'nickname'], name='unique_plantinstance_nickname_per_customer')
         ]

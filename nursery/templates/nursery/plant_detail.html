@@ -3,7 +3,7 @@
 {% block content %}
   <h1>Plant Type: {{ plant.scientific_name }}</h1>
   <p><strong>Owner</strong> {{ plant.user }}</p>
-  <p><strong>Common Names:</strong> {{ plant.common_name.all|join:", " }}</p>
+  <p><strong>Common Name:</strong> {{ plant.common_name }}</p>
   <p><strong>Description:</strong> {{ plant.description }}</p>
   <p><strong>Care Tips:</strong> {{ plant.care_tips }}</p>
   <p><strong>Water:</strong> {{ plant.get_water_display }}</p>
@@ -40,7 +40,9 @@
       {% endif %}
        
       {% if not plant.plantinstance_set.all and perms.nursery.delete_plant %} 
-        <li><a href="{% url 'plant-delete' plant.id %}">Delete plant</a></li> 
+        <li><a href="{% url 'plant-delete' plant.id %}">Delete plant</a></li>
+      {% else %}
+        <li>Cannot delete -- plant instances of this kind exist</li> 
       {% endif %} 
     </ul> 
   {% endif %} 

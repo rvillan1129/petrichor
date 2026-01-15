@@ -43,6 +43,18 @@ class PlantListView(generic.ListView):
     model = Plant
     paginate_by = 10
 
+class PlantByUserListView(LoginRequiredMixin, generic.ListView):
+    """Generic class-based view listing plants by current user and groundskeeper."""
+    model = Plant
+    template_name = 'nursery/plant_list_by_user_and_groundskeep.html'
+    paginate_by = 10
+
+    def get_queryset(self):
+        return (
+            Plant.objects.filter(user=self.request.user)
+            .order_by('scientific_name')
+        )
+
 class PlantDetailView(generic.DetailView):
     model = Plant
 
@@ -54,6 +66,7 @@ class LocationDetailView(generic.DetailView):
     model = Location
 
 class PlantInstanceStaffOnlyListView(UserPassesTestMixin, generic.ListView):
+    """Generic class-based view listing all plants if user is staff."""
     model = PlantInstance
     template_name = 'nursery/plantinstance_list_staff_only.html'
     paginate_by = 10

@@ -4,7 +4,7 @@
   <h1>{{ plantinstance.nickname }} (<a href="{% url 'plant-detail' plantinstance.plant.pk %}">{{ plantinstance.plant }}</a>)</h1>
   <h2>Owner: {{ plantinstance.customer }}</h2>
 
-  <p><strong>Common Names:</strong> {{ plantinstance.plant.common_name.all|join:", " }}</p>
+  <p><strong>Common Name:</strong> {{ plantinstance.plant.common_name }}</p>
   <p><strong>location:</strong> {{ plantinstance.location }}</p>
   <p><strong>Purchased:</strong> {{ plantinstance.purchased }}</p>
   <p>

@@ -20,16 +20,16 @@ class PlantInstanceInline(admin.StackedInline):
 # Register the Admin classes for Plant using the decorator
 @admin.register(Plant)
 class PlantAdmin(admin.ModelAdmin):
-    list_display = ('scientific_name', 'display_common_name', 'water', 'sun', 'description', 'care_tips')
+    list_display = ('scientific_name', 'common_name', 'water', 'sun', 'description', 'care_tips', 'user')
 
-    fields = [('scientific_name', 'common_name'), ('water', 'sun'), 'description', 'care_tips']
+    fields = ['user', ('scientific_name', 'common_name'), ('water', 'sun'), 'description', 'care_tips']
 
     inlines = [PlantInstanceInline]
 
 # Register the Admin classes for PlantInstance using the decorator
 @admin.register(PlantInstance)
 class PlantInstanceAdmin(admin.ModelAdmin):
-    list_display = ('nickname', 'plant', 'display_common_name', 'customer','location', 'status', 'due_watered')
+    list_display = ('nickname', 'plant', 'customer','location', 'status', 'due_watered')
     list_filter = ('status', 'due_watered')
 
     fields = ['plant', 'nickname', 'location', 'customer', ('purchased', 'due_watered'), 'status', 'id']

@@ -35,19 +35,19 @@
               <li><a href="{% url 'index' %}">Home</a></li>
               {% if user.is_authenticated %}
                 <hr>
-                <li>Plant Instance</li>
+                <li>Nursery</li>
+                <li>
+                  <ul>
+                    <li><a href="{% url 'user-plant-templates' %}">Plant templates</a></li>
+                    <li><a href="{% url 'plant-create' %}">Create Plant Template</a></li>
+                  </ul>
+                </li>
+                <li>My Garden</li>
                 <li>
                   <ul>
                     <li><a href="{% url 'my-plants' %}">My Plants</a></li>
                     <li><a href="{% url 'my-due-watered' %}">Dry Plants</a></li>
                     <li><a href="{% url 'plant-instance-create' %}">Add Plant Instance</a></li>
-                  </ul>
-                </li>
-                <li>Plant Template</li>
-                <li>
-                  <ul>
-                    <li><a href="{% url 'plants' %}">Plant templates</a></li>
-                    <li><a href="{% url 'plant-create' %}">Create Plant Template</a></li>
                   </ul>
                 </li>
               {% endif %}

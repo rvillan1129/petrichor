@@ -36,10 +36,7 @@ class Plant(models.Model):
     """Model representing a type of plant."""
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     scientific_name = models.CharField(max_length=200)
-    
-    # ManyToManyField used because common name can refer to different plants. Plants can have many common names.
-    # CommonName class has already been defined so we can specify the object above.
-    common_name = models.ManyToManyField(CommonName, help_text="Select a common name for this plant")
+    common_name = models.CharField(max_length=200, help_text="Select a common name for this plant", null=True)
     
     WATER_FREQ = (
         ('f', 'frequent'),
@@ -87,12 +84,6 @@ class Plant(models.Model):
     def get_absolute_url(self):
         """Returns the URL to access a detail record for this plant."""
         return reverse('plant-detail', args=[str(self.id)])
-    
-    def display_common_name(self):
-        """Create a string for common names. This is required to display common names in Admin."""
-        return ', '.join(CommonName.name for CommonName in self.common_name.all()[:3])
-
-    display_common_name.short_description = 'Common Names'
 
 class PlantInstance(models.Model):
     """Model representing an instance of a type of plant."""

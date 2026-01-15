@@ -1,7 +1,7 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-  <h1>List of All Plant Templates Currently in Nursery</h1>
+  <h1>My Plant Templates in Nursery</h1>
   {% if plant_list %}
     <ul>
       {% for plant in plant_list %}
@@ -13,6 +13,6 @@
       {% endfor %}
     </ul>
   {% else %}
-    <p>There are no plants in the nursery.</p>
+    <p>There are no plants in nursery.</p>
   {% endif %}
 {% endblock %}

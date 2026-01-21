@@ -138,14 +138,14 @@ class PlantInstance(models.Model):
         return f'{self.nickname} ({self.plant.scientific_name}) {self.id}'
     
     def display_common_name(self):
-        """Create a string for common names. This is required to display common names in Admin."""
-        return ', '.join(CommonName.name for CommonName in self.plant.common_name.all()[:3])
+        """Create a string for common_name. This is required to display common_name in Admin."""
+        return self.plant.common_name
     
     def get_absolute_url(self):
         """Returns the URL to access a detail record for this plant instance"""
         return reverse('plant-instance-detail', args=[str(self.id)])
 
-    display_common_name.short_description = 'Common Names'
+    display_common_name.short_description = 'Common Name'
     
 class Location(models.Model):
     """Model representing a Location (e.g. Living Room, Kitchen, etc.)"""

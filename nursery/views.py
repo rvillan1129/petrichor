@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, Http404
 from .models import Plant, PlantInstance, Location
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views import generic
@@ -39,12 +39,17 @@ def index(request):
     # Render the HTML template index.html with the data in the context variable
     return render(request, 'index.html', context=context)
 
-class PlantListView(generic.ListView):
+class PlantListView(UserPassesTestMixin, generic.ListView):
+    """Generic class-based view listing all plants if user is staff."""
     model = Plant
     paginate_by = 10
 
+    def test_func(self):
+        # test if user is staff
+        return self.request.user.is_staff
+
 class PlantByUserListView(LoginRequiredMixin, generic.ListView):
-    """Generic class-based view listing plants by current user and groundskeeper."""
+    """Generic class-based view listing plants by current user."""
     model = Plant
     template_name = 'nursery/plant_list_by_user_and_groundskeep.html'
     paginate_by = 10
@@ -66,12 +71,13 @@ class LocationDetailView(generic.DetailView):
     model = Location
 
 class PlantInstanceStaffOnlyListView(UserPassesTestMixin, generic.ListView):
-    """Generic class-based view listing all plants if user is staff."""
+    """Generic class-based view listing all plant instances if user is staff."""
     model = PlantInstance
     template_name = 'nursery/plantinstance_list_staff_only.html'
     paginate_by = 10
 
     def test_func(self):
+        # test if user is staff
         return self.request.user.is_staff
 
 class PlantInstanceDetailView(generic.DetailView):
@@ -149,21 +155,28 @@ def renew_due_watered_date(request, pk):
  
 ## CRUD Operations ##
 
-class PlantCreate(LoginRequiredMixin,PermissionRequiredMixin, CreateView): 
+class PlantCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView): 
     model = Plant 
     fields = ['scientific_name', 'common_name','water', 'sun', 'description', 'care_tips'] 
     initial = {'water': 'r', 'sun': 'p',}
     permission_required = 'nursery.add_plant'
 
     def form_valid(self, form):
+        # set Plant user equal to user creating plant
         form.instance.user = self.request.user
         return super().form_valid(form)
 
-class PlantUpdate(PermissionRequiredMixin, UpdateView): 
+class PlantUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView): 
     model = Plant 
-    # Not recommended (potential security issue if more fields added) 
-    fields = '__all__' 
-    permission_required = 'nursery.change_plant' 
+    fields = ['scientific_name', 'common_name','water', 'sun', 'description', 'care_tips'] 
+    permission_required = 'nursery.change_plant'
+    
+    ## should create separate plantupdate for staff only?
+    def get_queryset(self):
+        # Start with the base queryset
+        queryset = super().get_queryset()
+        # Further filter the queryset to include only objects created by the current user
+        return queryset.filter(user=self.request.user)
     
 class PlantDelete(PermissionRequiredMixin, DeleteView): 
     model = Plant 
@@ -195,6 +208,12 @@ class PlantInstanceUpdate(PermissionRequiredMixin, UpdateView):
     model = PlantInstance 
     fields = ['plant', 'customer', 'nickname', 'location', 'purchased', 'due_watered', 'status'] 
     permission_required = 'nursery.change_plantinstance' 
+
+    def get_queryset(self):
+        # Start with the base queryset
+        queryset = super().get_queryset()
+        # Further filter the queryset to include only objects created by the current user
+        return queryset.filter(customer=self.request.user)
 
 class PlantInstanceDelete(PermissionRequiredMixin, DeleteView): 
     model = PlantInstance 

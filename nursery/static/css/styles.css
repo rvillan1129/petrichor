@@ -13,13 +13,13 @@
 }
 
 a:link {
-  color: white;
+  color: black;
 }
 
 a:visited {
-  color: beige;
+  color: gray;
 }
 
 a:hover {
-  color: black;
+  color: slategray;
 }

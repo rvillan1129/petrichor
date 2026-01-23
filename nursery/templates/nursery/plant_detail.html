@@ -35,7 +35,9 @@
   {% if perms.nursery.change_plant or perms.nursery.delete_plant %} 
   <hr> 
     <ul class="sidebar-nav"> 
-      {% if perms.nursery.change_plant %} 
+      {% if user.is_staff %} 
+        <li><a href="{% url 'staff-plant-update' plant.id %}">STAFF Update plant</a></li>
+      {% elif perms.nursery.change_plant %} 
         <li><a href="{% url 'plant-update' plant.id %}">Update plant</a></li> 
       {% endif %}
        

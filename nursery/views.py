@@ -171,22 +171,39 @@ class PlantUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     fields = ['scientific_name', 'common_name','water', 'sun', 'description', 'care_tips'] 
     permission_required = 'nursery.change_plant'
     
-    ## should create separate plantupdate for staff only?
     def get_queryset(self):
         # Start with the base queryset
         queryset = super().get_queryset()
         # Further filter the queryset to include only objects created by the current user
         return queryset.filter(user=self.request.user)
-    
+
+class PlantUpdateStaffOnly(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Plant
+    fields = ['scientific_name', 'user', 'common_name','water', 'sun', 'description', 'care_tips'] 
+    permission_required = 'nursery.change_plant'
+
+
+    def test_func(self):
+        # test if user is staff
+        return self.request.user.is_staff
+
 class PlantDelete(PermissionRequiredMixin, DeleteView): 
     model = Plant 
-    success_url = reverse_lazy('plants') 
+    success_url = reverse_lazy('user-plant-templates')  
     permission_required = 'nursery.delete_plant' 
     
     def form_valid(self, form): 
         try: 
-            self.object.delete() 
-            return HttpResponseRedirect(self.success_url) 
+            obj = self.object
+            
+            if self.request.user.is_staff:
+                obj.delete() 
+                return HttpResponseRedirect(reverse_lazy('plants')) 
+            elif obj.user == self.request.user:
+                obj.delete() 
+                return HttpResponseRedirect(self.success_url) 
+            else:
+                return HttpResponseRedirect( reverse("plant-delete", kwargs={"pk": self.object.pk}) )
         except Exception as e: 
             return HttpResponseRedirect( reverse("plant-delete", kwargs={"pk": self.object.pk}) )
 
@@ -215,6 +232,15 @@ class PlantInstanceUpdate(PermissionRequiredMixin, UpdateView):
         # Further filter the queryset to include only objects created by the current user
         return queryset.filter(customer=self.request.user)
 
+class PlantInstanceUpdateStaffOnly(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = PlantInstance 
+    fields = ['plant', 'customer', 'nickname', 'location', 'purchased', 'due_watered', 'status'] 
+    permission_required = 'nursery.change_plantinstance' 
+
+    def test_func(self):
+        # test if user is staff
+        return self.request.user.is_staff
+
 class PlantInstanceDelete(PermissionRequiredMixin, DeleteView): 
     model = PlantInstance 
     success_url = reverse_lazy('my-plants') 
@@ -222,7 +248,15 @@ class PlantInstanceDelete(PermissionRequiredMixin, DeleteView):
     
     def form_valid(self, form): 
         try: 
-            self.object.delete() 
-            return HttpResponseRedirect(self.success_url) 
+            obj = self.object
+
+            if self.request.user.is_staff:
+                obj.delete() 
+                return HttpResponseRedirect(reverse_lazy('plantinstances')) 
+            elif obj.customer == self.request.user:
+                obj.delete() 
+                return HttpResponseRedirect(self.success_url) 
+            else:
+                return HttpResponseRedirect( reverse("plant-instance-delete", kwargs={"pk": self.object.pk}) )
         except Exception as e: 
             return HttpResponseRedirect( reverse("plant-instance-delete", kwargs={"pk": self.object.pk}) )

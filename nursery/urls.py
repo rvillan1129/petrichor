@@ -31,3 +31,8 @@ urlpatterns += [
     path('plantinstance/create/', views.PlantInstanceCreate.as_view(), name='plant-instance-create'),
     path('plantinstance/<uuid:pk>/update/', views.PlantInstanceUpdate.as_view(), name='plant-instance-update'), 
     path('plantinstance/<uuid:pk>/delete/', views.PlantInstanceDelete.as_view(), name='plant-instance-delete'),]
+
+urlpatterns += [
+    path('staff/plant/<int:pk>/update/', views.PlantUpdateStaffOnly.as_view(), name='staff-plant-update'),
+    path('staff/plantinstance/<uuid:pk>/update/', views.PlantInstanceUpdateStaffOnly.as_view(), name='staff-plant-instance-update'), 
+]

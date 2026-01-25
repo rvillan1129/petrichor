@@ -4,6 +4,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 import datetime
@@ -203,6 +204,7 @@ class PlantDelete(PermissionRequiredMixin, DeleteView):
                 obj.delete() 
                 return HttpResponseRedirect(self.success_url) 
             else:
+                messages.error(self.request, "Error: You are not allowed to delete this plant.")
                 return HttpResponseRedirect( reverse("plant-delete", kwargs={"pk": self.object.pk}) )
         except Exception as e: 
             return HttpResponseRedirect( reverse("plant-delete", kwargs={"pk": self.object.pk}) )
@@ -217,6 +219,32 @@ class PlantInstanceCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateVie
                'due_watered': proposed_due_watered_date}
     permission_required = 'nursery.add_plantinstance'
 
+    def form_valid(self, form):
+        form.instance.customer = self.request.user
+        return super().form_valid(form)
+
+class PlantInstanceCreateFromPlant(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    model = PlantInstance 
+    fields = ['plant', 'nickname', 'location', 'purchased', 'due_watered', 'status']
+    permission_required = 'nursery.add_plantinstance'
+
+    
+    # Set the initial value for a specific field
+    # The value should be the primary key or the actual object instance if it's a ForeignKey/ModelChoiceField
+    # This shows up before form submission
+    def get_initial(self):
+        # Retrieve plant object using the pk from the URL
+        plant = get_object_or_404(Plant, pk=self.kwargs['pk'])
+        proposed_due_watered_date = datetime.date.today() + datetime.timedelta(weeks=2)
+        initial = super().get_initial()
+
+        initial['status'] = 'n'
+        initial['purchased'] = datetime.date.today()
+        initial['due_watered'] = proposed_due_watered_date
+        initial['plant'] = plant
+
+        return initial
+    # This shows up after form submission, in definition
     def form_valid(self, form):
         form.instance.customer = self.request.user
         return super().form_valid(form)
@@ -257,6 +285,7 @@ class PlantInstanceDelete(PermissionRequiredMixin, DeleteView):
                 obj.delete() 
                 return HttpResponseRedirect(self.success_url) 
             else:
+                messages.error(self.request, "Error: You are not allowed to delete this plant instance.")
                 return HttpResponseRedirect( reverse("plant-instance-delete", kwargs={"pk": self.object.pk}) )
         except Exception as e: 
             return HttpResponseRedirect( reverse("plant-instance-delete", kwargs={"pk": self.object.pk}) )

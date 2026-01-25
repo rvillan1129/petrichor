@@ -2,6 +2,9 @@
 
 {% block content %}
   <h1>My Plant Templates in Nursery</h1>
+  <ul>
+    <li><a href="{% url 'plant-create' %}">Create Plant Template</a></li>
+  </ul>
   {% if plant_list %}
     <ul>
       {% for plant in plant_list %}

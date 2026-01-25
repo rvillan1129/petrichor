@@ -29,6 +29,7 @@ urlpatterns += [
 
 urlpatterns += [ 
     path('plantinstance/create/', views.PlantInstanceCreate.as_view(), name='plant-instance-create'),
+    path('plantinstance/<int:pk>/create/', views.PlantInstanceCreateFromPlant.as_view(), name='plant-instance-create-from-plant'),
     path('plantinstance/<uuid:pk>/update/', views.PlantInstanceUpdate.as_view(), name='plant-instance-update'), 
     path('plantinstance/<uuid:pk>/delete/', views.PlantInstanceDelete.as_view(), name='plant-instance-delete'),]
 

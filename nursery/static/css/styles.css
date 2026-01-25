@@ -15,11 +15,3 @@
 a:link {
   color: black;
 }
-
-a:visited {
-  color: gray;
-}
-
-a:hover {
-  color: slategray;
-}

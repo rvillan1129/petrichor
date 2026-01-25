@@ -35,16 +35,20 @@
   {% if perms.nursery.change_plant or perms.nursery.delete_plant %} 
   <hr> 
     <ul class="sidebar-nav"> 
-      {% if user.is_staff %} 
-        <li><a href="{% url 'staff-plant-update' plant.id %}">STAFF Update plant</a></li>
+      {% if perms.nursery.add_plant %} 
+        <li><a href="{% url 'plant-instance-create-from-plant' plant.id %}">Add to My Garden</a></li> 
+      {% endif %}
+      {% if user.is_staff %}
+        <li>*~STAFF~*</li> 
+        <li><a href="{% url 'staff-plant-update' plant.id %}">Edit plant</a></li>
       {% elif perms.nursery.change_plant %} 
-        <li><a href="{% url 'plant-update' plant.id %}">Update plant</a></li> 
+        <li><a href="{% url 'plant-update' plant.id %}">Edit plant</a></li> 
       {% endif %}
        
       {% if not plant.plantinstance_set.all and perms.nursery.delete_plant %} 
         <li><a href="{% url 'plant-delete' plant.id %}">Delete plant</a></li>
       {% else %}
-        <li>Cannot delete -- plant instances of this kind exist</li> 
+        <li><s>Delete plant</s></li> 
       {% endif %} 
     </ul> 
   {% endif %} 

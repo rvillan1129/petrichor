@@ -64,6 +64,16 @@ class PlantByUserListView(LoginRequiredMixin, generic.ListView):
 class PlantDetailView(generic.DetailView):
     model = Plant
 
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super().get_context_data(**kwargs)
+        
+        # Add in a QuerySet of all related plant instances for this user
+        # self.object refers to the publisher instance retrieved by DetailView
+        context["plantinstance_list"] = PlantInstance.objects.filter(customer=self.object.user).filter(plant=self.object)
+        
+        return context
+
 class LocationListView(generic.ListView):
     model = Location
     paginate_by = 10

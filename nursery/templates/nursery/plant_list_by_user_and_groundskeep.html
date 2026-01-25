@@ -1,21 +1,20 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-  <h1>My Plant Templates in Nursery</h1>
+  <h1>Plants in Nursery</h1>
   <ul>
-    <li><a href="{% url 'plant-create' %}">Create Plant Template</a></li>
+    <li><a href="{% url 'plant-create' %}">Add Plant to Nursery</a></li>
   </ul>
   {% if plant_list %}
     <ul>
       {% for plant in plant_list %}
       <li>
-        {{ plant.user }} - 
         <a href="{{ plant.get_absolute_url }}">{{ plant.scientific_name }}</a>
         ({{ plant.common_name }})
       </li>
       {% endfor %}
     </ul>
   {% else %}
-    <p>There are no plants in nursery.</p>
+    <p>There are no Plants in Nursery.</p>
   {% endif %}
 {% endblock %}

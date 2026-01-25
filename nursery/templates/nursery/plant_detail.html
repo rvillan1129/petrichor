@@ -9,25 +9,47 @@
   <p><strong>Water:</strong> {{ plant.get_water_display }}</p>
   <p><strong>Sun:</strong> {{ plant.get_sun_display }}</p>
 
-  {% if user.is_staff %} 
+  
   <div style="margin-left:20px;margin-top:20px">
-    <h4>List of All Plants Owned of This Type</h4>
-
-    {% for purchasedPlant in plant.plantinstance_set.all %}
-      <hr />
-      <p><strong>Nickname:</strong> {{ purchasedPlant.nickname }} ({{ purchasedPlant.plant }})</p>
-      <p><strong>Owner:</strong> {{ purchasedPlant.customer }}</p>
-      <p><strong>Location:</strong> <a href="{{ purchasedPlant.location.get_absolute_url }}">{{ purchasedPlant.location }}</a></p>
-      <p
-        class="{% if purchasedPlant.status == 'w' %}text-success{% elif purchasedPlant.status == 'n' %}text-danger{% else %}text-warning{% endif %}">
-        {{ purchasedPlant.get_status_display }}
-      </p>
-      {% if purchasedPlant.status != 'w' %}
-        <p><strong>Due to be watered:</strong> {{ purchasedPlant.due_watered }}</p>
-      {% endif %}
-    {% endfor %}
+    <h4>Plants of this kind in My Garden</h4>
+    {% if user.is_staff and plantinstance_set.all %} 
+      <p><strong>*~STAFF VIEW~*</strong></p>
+      {% for purchasedPlant in plant.plantinstance_set.all %}
+        <hr />
+        <p><strong>Owner:</strong> {{ purchasedPlant.customer }}</p>
+        <p><strong>Plant:</strong> {{ purchasedPlant.plant }}</p>
+        <p><strong>Nickname:</strong> <a href="{{ purchasedPlant.get_absolute_url }}">{{ purchasedPlant.nickname }}</a></p>
+        <p><strong>Location:</strong> <a href="{{ purchasedPlant.location.get_absolute_url }}">{{ purchasedPlant.location }}</a></p>
+        <p>
+          <strong>Watered Status:</strong>
+          <span class="{% if purchasedPlant.status == 'w' %}text-success{% elif purchasedPlant.status == 'n' %}text-danger{% else %}text-warning{% endif %}">
+          {{ purchasedPlant.get_status_display }}
+          </span>
+        </p>
+        {% if purchasedPlant.status != 'w' %}
+          <p><strong>Due to be watered:</strong> {{ purchasedPlant.due_watered }}</p>
+        {% endif %}
+      {% endfor %}
+    {% elif plantinstance_list %}
+        {% for plantinst in plantinstance_list %}
+        <hr />
+        <p><strong>Nickname:</strong> <a href="{{ plantinst.get_absolute_url }}">{{ plantinst.nickname }}</a></p>
+        <p><strong>Location:</strong> <a href="{{ plantinst.location.get_absolute_url }}">{{ plantinst.location }}</a></p>
+        <p>
+          <strong>Watered Status:</strong>
+          <span class="{% if plantinst.status == 'w' %}text-success{% elif plantinst.status == 'n' %}text-danger{% else %}text-warning{% endif %}">
+            {{ plantinst.get_status_display }}
+          </span>
+        </p>
+        {% if plantinst.status != 'w' %}
+          <p><strong>Due to be watered:</strong> {{ plantinst.due_watered }}</p>
+        {% endif %}
+      {% endfor %}
+    {% else %}
+        <hr>
+        <p><strong>There are no Plants of this kind in My Garden</strong></p>
+    {% endif %}
   </div>
-  {% endif %}
 {% endblock %}
 
 {% block sidebar %} 
@@ -40,13 +62,14 @@
       {% endif %}
       {% if user.is_staff %}
         <li>*~STAFF~*</li> 
-        <li><a href="{% url 'staff-plant-update' plant.id %}">Edit plant</a></li>
+        <li><a href="{% url 'staff-plant-update' plant.id %}">Edit Plant</a></li>
+        <li>*~~~~~*</li> 
       {% elif perms.nursery.change_plant %} 
-        <li><a href="{% url 'plant-update' plant.id %}">Edit plant</a></li> 
+        <li><a href="{% url 'plant-update' plant.id %}">Edit Plant</a></li> 
       {% endif %}
        
       {% if not plant.plantinstance_set.all and perms.nursery.delete_plant %} 
-        <li><a href="{% url 'plant-delete' plant.id %}">Delete plant</a></li>
+        <li><a href="{% url 'plant-delete' plant.id %}">Delete Plant</a></li>
       {% else %}
         <li><s>Delete plant</s></li> 
       {% endif %} 

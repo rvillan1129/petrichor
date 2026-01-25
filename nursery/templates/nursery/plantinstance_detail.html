@@ -1,11 +1,11 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-  <h1>{{ plantinstance.nickname }} (<a href="{% url 'plant-detail' plantinstance.plant.pk %}">{{ plantinstance.plant }}</a>)</h1>
+  <h1>{{ plantinstance.nickname }}</h1>
 
-  <p><strong>Owner:</strong> {{ plantinstance.customer }}</p>
+  <p><strong>Plant:</strong> <a href="{% url 'plant-detail' plantinstance.plant.pk %}">{{ plantinstance.plant }}</a></p>
   <p><strong>Common Name:</strong> {{ plantinstance.plant.common_name }}</p>
-  <p><strong>location:</strong> {{ plantinstance.location }}</p>
+  <p><strong>location:</strong> <a href="{{ plantinstance.location.get_absolute_url }}">{{ plantinstance.location }}</a></p>
   <p><strong>Purchased:</strong> {{ plantinstance.purchased }}</p>
   <p>
     <strong>Due Watered:</strong> 
@@ -27,12 +27,14 @@
   <hr> 
     <ul class="sidebar-nav">
       {% if user.is_staff %}
-        <li><a href="{% url 'staff-plant-instance-update' plantinstance.id %}">STAFF Update plant instance</a></li>  
+        <li>*~STAFF~*</li>
+        <li><a href="{% url 'staff-plant-instance-update' plantinstance.id %}">Edit Plant Instance</a></li> 
+        <li>*~~~~~*</li>  
       {% elif perms.nursery.change_plantinstance %} 
-        <li><a href="{% url 'plant-instance-update' plantinstance.id %}">Update plant instance</a></li> 
+        <li><a href="{% url 'plant-instance-update' plantinstance.id %}">Edit My Plant</a></li> 
       {% endif %}
       {% if perms.nursery.delete_plantinstance %} 
-        <li><a href="{% url 'plant-instance-delete' plantinstance.id %}">Delete plant instance</a></li> 
+        <li><a href="{% url 'plant-instance-delete' plantinstance.id %}">Delete My Plant</a></li> 
       {% endif %}
     </ul> 
   {% endif %} 

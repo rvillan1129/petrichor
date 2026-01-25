@@ -14,12 +14,12 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
   </head>
-  <body style="background-color: rgb(193,143, 50); color: black;">
+  <body style="background-color: #95ab87; color: black;">
     <div class="container-fluid">
       <div class="row">
         <div class="col-sm-2">
           {% block sidebar %}
-            <ul class="sidebar-nav" style="background-color: rgb(193,143, 50);">
+            <ul class="sidebar-nav" style="background-color: #95ab87;">
               {% if user.is_authenticated %}
               <li>User: {{ user.get_username }}</li>
               <hr>
@@ -45,7 +45,6 @@
                 <li>
                   <ul>
                     <li><a href="{% url 'my-plants' %}">My Plants</a></li>
-                    <li><a href="{% url 'my-due-watered' %}">Dry Plants</a></li>
                   </ul>
                 </li>
               {% endif %}

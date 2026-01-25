@@ -147,6 +147,7 @@ def renew_due_watered_date(request, pk):
         if form.is_valid():
             # process the data in form.cleaned_data as required (here we just write it to the model due_watered field)
             plant_instance.due_watered = form.cleaned_data['renewal_date']
+            plant_instance.status = 'w'
             plant_instance.save()
 
             # redirect to a new URL:

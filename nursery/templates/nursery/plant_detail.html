@@ -1,13 +1,13 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-  <h1>Plant Type: {{ plant.scientific_name }}</h1>
+  <h1>{{ plant.scientific_name }}</h1>
   <p><strong>Owner</strong> {{ plant.user }}</p>
   <p><strong>Common Name:</strong> {{ plant.common_name }}</p>
-  <p><strong>Description:</strong> {{ plant.description }}</p>
-  <p><strong>Care Tips:</strong> {{ plant.care_tips }}</p>
   <p><strong>Water:</strong> {{ plant.get_water_display }}</p>
   <p><strong>Sun:</strong> {{ plant.get_sun_display }}</p>
+  <p><strong>Description:</strong> {{ plant.description }}</p>
+  <p><strong>Care Tips:</strong> {{ plant.care_tips }}</p>
 
   
   <div style="margin-left:20px;margin-top:20px">

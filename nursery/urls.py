@@ -8,6 +8,7 @@ urlpatterns = [
     path('plantinstances/', views.PlantInstanceStaffOnlyListView.as_view(), name='plantinstances'),
     path('plantinstance/<uuid:pk>', views.PlantInstanceDetailView.as_view(), name='plant-instance-detail'),
     path('locations/', views.LocationListView.as_view(), name='locations'),
+    path('mylocations/', views.LocationByUserListView.as_view(), name='my-locations'),
     path('location/<int:pk>', views.LocationDetailView.as_view(), name='location-detail'),
 ]
 
@@ -25,11 +26,13 @@ urlpatterns += [
 urlpatterns += [ 
     path('plant/create/', views.PlantCreate.as_view(), name='plant-create'), 
     path('plant/<int:pk>/update/', views.PlantUpdate.as_view(), name='plant-update'), 
-    path('plant/<int:pk>/delete/', views.PlantDelete.as_view(), name='plant-delete'), ]
+    path('plant/<int:pk>/delete/', views.PlantDelete.as_view(), name='plant-delete'),
+    path('location/create/', views.LocationCreate.as_view(), name='location-create'), ]
 
 urlpatterns += [ 
     path('plantinstance/create/', views.PlantInstanceCreate.as_view(), name='plant-instance-create'),
     path('plantinstance/<int:pk>/create/', views.PlantInstanceCreateFromPlant.as_view(), name='plant-instance-create-from-plant'),
+    path('plantinstanceloc/<int:pk>/create/', views.PlantInstanceCreateFromLocation.as_view(), name='plant-instance-create-from-location'),
     path('plantinstance/<uuid:pk>/update/', views.PlantInstanceUpdate.as_view(), name='plant-instance-update'), 
     path('plantinstance/<uuid:pk>/delete/', views.PlantInstanceDelete.as_view(), name='plant-instance-delete'),]
 

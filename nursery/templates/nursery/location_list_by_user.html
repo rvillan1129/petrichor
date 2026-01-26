@@ -1,0 +1,19 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>Locations</h1>
+  <ul>
+    <li><a href="{% url 'location-create' %}">Add Location to Garden</a></li>
+  </ul>
+  {% if location_list %}
+    <ul>
+      {% for loc in location_list %}
+        <li>
+            {{ loc.user }} - <a href="{{ loc.get_absolute_url }}">{{ loc.name }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>There are no Locations in Garden.</p>
+  {% endif %}
+{% endblock %}

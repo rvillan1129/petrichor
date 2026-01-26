@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, Http404
 from .models import Plant, PlantInstance, Location
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.contrib.auth.models import User
 from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
@@ -23,6 +24,7 @@ def index(request):
 
     # The 'all()' is implied by default.
     num_locations = Location.objects.count()
+    num_users = User.objects.count()
 
     # Number of visits to this view, as counted in the session variable.
     num_visits = request.session.get('num_visits', 0)
@@ -35,6 +37,7 @@ def index(request):
         'num_instances_purchased': num_instances_purchased,
         'num_locations': num_locations,
         'num_visits': num_visits,
+        'num_users': num_users,
     }
 
     # Render the HTML template index.html with the data in the context variable
@@ -75,12 +78,39 @@ class PlantDetailView(generic.DetailView):
         return context
 
 
-class LocationListView(generic.ListView):
+class LocationListView(UserPassesTestMixin, generic.ListView):
+    """Generic class-based view listing all locations if user is staff."""
     model = Location
     paginate_by = 10
 
+    def test_func(self):
+        # test if user is staff
+        return self.request.user.is_staff
+    
+class LocationByUserListView(LoginRequiredMixin, generic.ListView):
+    """Generic class-based view listing locations by current user."""
+    model = Location
+    template_name = 'nursery/location_list_by_user.html'
+    paginate_by = 10
+
+    def get_queryset(self):
+        return (
+            Location.objects.filter(user=self.request.user)
+            .order_by('name')
+        )
+
 class LocationDetailView(generic.DetailView):
     model = Location
+
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super().get_context_data(**kwargs)
+        
+        # Add in a QuerySet of all related plant instances for this user
+        # self.object refers to the publisher instance retrieved by DetailView
+        context["plantinstance_list"] = PlantInstance.objects.filter(customer=self.object.user).filter(location=self.object)
+        
+        return context
 
 
 class PlantInstanceStaffOnlyListView(UserPassesTestMixin, generic.ListView):
@@ -240,6 +270,7 @@ class PlantInstanceCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateVie
             return form
         else:
             form.fields['plant'].queryset = form.fields['plant'].queryset.filter(user=self.request.user)
+            form.fields['location'].queryset = form.fields['location'].queryset.filter(user=self.request.user)
         return form
 
     # This shows up after form submission, in definition
@@ -259,6 +290,7 @@ class PlantInstanceCreateFromPlant(LoginRequiredMixin, PermissionRequiredMixin, 
             return form
         else:
             form.fields['plant'].queryset = form.fields['plant'].queryset.filter(user=self.request.user)
+            form.fields['location'].queryset = form.fields['location'].queryset.filter(user=self.request.user)
         return form
     
     # Set the initial value for a specific field
@@ -274,6 +306,42 @@ class PlantInstanceCreateFromPlant(LoginRequiredMixin, PermissionRequiredMixin, 
         initial['purchased'] = datetime.date.today()
         initial['due_watered'] = proposed_due_watered_date
         initial['plant'] = plant
+
+        return initial
+    
+    # This shows up after form submission, in definition
+    def form_valid(self, form):
+        form.instance.customer = self.request.user
+        return super().form_valid(form)
+    
+class PlantInstanceCreateFromLocation(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    model = PlantInstance 
+    fields = ['plant', 'nickname', 'location', 'purchased', 'due_watered', 'status']
+    permission_required = 'nursery.add_plantinstance'
+
+    # filter queryset for plant drop-down by user or staff
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class=None)
+        if self.request.user.is_staff:
+            return form
+        else:
+            form.fields['plant'].queryset = form.fields['plant'].queryset.filter(user=self.request.user)
+            form.fields['location'].queryset = form.fields['location'].queryset.filter(user=self.request.user)
+        return form
+    
+    # Set the initial value for a specific field
+    # The value should be the primary key or the actual object instance if it's a ForeignKey/ModelChoiceField
+    # This shows up before form submission
+    def get_initial(self):
+        # Retrieve location object using the pk from the URL
+        location = get_object_or_404(Location, pk=self.kwargs['pk'])
+        proposed_due_watered_date = datetime.date.today() + datetime.timedelta(weeks=2)
+        initial = super().get_initial()
+
+        initial['status'] = 'w'
+        initial['purchased'] = datetime.date.today()
+        initial['due_watered'] = proposed_due_watered_date
+        initial['location'] = location
 
         return initial
     
@@ -323,3 +391,12 @@ class PlantInstanceDelete(PermissionRequiredMixin, DeleteView):
         except Exception as e: 
             return HttpResponseRedirect( reverse("plant-instance-delete", kwargs={"pk": self.object.pk}) )
         
+class LocationCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView): 
+    model = Location 
+    fields = ['name',] 
+    permission_required = 'nursery.add_location'
+
+    def form_valid(self, form):
+        # set Location user equal to user creating location
+        form.instance.user = self.request.user
+        return super().form_valid(form)

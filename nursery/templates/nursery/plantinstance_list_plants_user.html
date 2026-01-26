@@ -3,7 +3,7 @@
 {% block content %}
     <h1>My Plants</h1>
     <ul>
-      <li><a href="{% url 'plant-instance-create' %}">Add Plants to My Garden</a></li>
+      <li><a href="{% url 'plant-instance-create' %}">Add Plant to My Garden</a></li>
       <li><a href="{% url 'my-due-watered' %}">All Dry Plants</a></li>
     </ul>
     {% if plantinstance_list %}

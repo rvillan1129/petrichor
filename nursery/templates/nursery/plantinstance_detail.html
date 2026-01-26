@@ -27,14 +27,16 @@
   <hr> 
     <ul class="sidebar-nav">
       {% if user.is_staff %}
-        <li>*~STAFF~*</li>
+        <li>*~STAFF VIEW~*</li>
         <li><a href="{% url 'staff-plant-instance-update' plantinstance.id %}">Edit Plant Instance</a></li> 
-        <li>*~~~~~*</li>  
       {% elif perms.nursery.change_plantinstance %} 
-        <li><a href="{% url 'plant-instance-update' plantinstance.id %}">Edit My Plant</a></li> 
+        <li><a href="{% url 'plant-instance-update' plantinstance.id %}">Edit Plant</a></li> 
       {% endif %}
       {% if perms.nursery.delete_plantinstance %} 
-        <li><a href="{% url 'plant-instance-delete' plantinstance.id %}">Delete My Plant</a></li> 
+        <li><a href="{% url 'plant-instance-delete' plantinstance.id %}">Delete Plant</a></li> 
+      {% endif %}
+      {% if user.is_staff %}
+        <li>*~~~~~~~~~*</li>  
       {% endif %}
     </ul> 
   {% endif %} 

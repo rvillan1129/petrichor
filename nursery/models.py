@@ -7,30 +7,24 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from datetime import date
 
-class CommonName(models.Model):
-    """Model representing a plant common name."""
-    name = models.CharField(
-        max_length=200,
-        unique=True,
-        help_text="Enter common name (e.g. Spider Plant, Snake Plant)"
-    )
-
-    def __str__(self):
-        """String for representing the Model object."""
-        return self.name
+class Location(models.Model):
+    """Model representing a Location (e.g. Living Room, Kitchen, etc.)"""
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    name = models.CharField(max_length=50,
+                            help_text="Enter the plant's Location (e.g. Living Room, Kitchen, etc.)")
 
     def get_absolute_url(self):
-        """Returns the url to access a particular common name instance."""
-        return reverse('commonName-detail', args=[str(self.id)])
+        """Returns the url to access a particular location instance."""
+        return reverse('location-detail', args=[str(self.id)])
+
+    def __str__(self):
+        """String for representing the Model object (in Admin site etc.)"""
+        return self.name
 
     class Meta:
-        constraints = [
-            UniqueConstraint(
-                Lower('name'),
-                name='commonName_name_case_insensitive_unique',
-                violation_error_message = "Common name already exists (case insensitive match)"
-            ),
-        ]
+        ordering = ['user', 'name']
+        constraints = [models.UniqueConstraint(fields=['user', 'name'], 
+                                               name='unique_name_per_owner')]
 
 class Plant(models.Model):
     """Model representing a type of plant."""
@@ -88,13 +82,12 @@ class Plant(models.Model):
 class PlantInstance(models.Model):
     """Model representing an instance of a type of plant."""
     plant = models.ForeignKey(Plant, on_delete=models.RESTRICT, null=True)
-    ## change to owner
     customer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     nickname = models.CharField(max_length=200, help_text='what do you call your plant child')
     
     # Foreign Key used because plant can only have one location, but location can house multiple plants.
     # location as a string rather than object because it hasn't been declared yet in file.
-    location = models.ForeignKey('Location', on_delete=models.RESTRICT, null=True, help_text='location plant will live')
+    location = models.ForeignKey(Location, on_delete=models.RESTRICT, null=True, help_text='location plant will live')
     
     purchased = models.DateField(null=True, blank=True, help_text='date plant was purchase')
     due_watered = models.DateField(null=True, blank=True, help_text='next watering date')
@@ -146,26 +139,4 @@ class PlantInstance(models.Model):
         return reverse('plant-instance-detail', args=[str(self.id)])
 
     display_common_name.short_description = 'Common Name'
-    
-class Location(models.Model):
-    """Model representing a Location (e.g. Living Room, Kitchen, etc.)"""
-    name = models.CharField(max_length=50,
-                            unique=True,
-                            help_text="Enter the plant's Location (e.g. Living Room, Kitchen, etc.)")
 
-    def get_absolute_url(self):
-        """Returns the url to access a particular location instance."""
-        return reverse('location-detail', args=[str(self.id)])
-
-    def __str__(self):
-        """String for representing the Model object (in Admin site etc.)"""
-        return self.name
-
-    class Meta:
-        constraints = [
-            UniqueConstraint(
-                Lower('name'),
-                name='location_name_case_insensitive_unique',
-                violation_error_message = "Location already exists (case insensitive match)"
-            ),
-        ]

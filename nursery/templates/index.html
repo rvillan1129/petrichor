@@ -1,21 +1,18 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-  <h1>Petrichor Home</h1>
-  <p>
-    Welcome to Petrichor, a website developed by
-    <em>the Groundskeeper</em>!
-  </p>
-  <p>
-    Petrichor <em>pet-ri-chor</em> : the smell of rain on dirt after a long period of warm, dry weather.
-  </p>
-  <h2>Dynamic content</h2>
-  <p>The nursery has the following record counts:</p>
-  <ul>
-    <li><strong>Type of Plants:</strong> {{ num_plants }}</li>
-    <li><strong>Total Count:</strong> {{ num_instances }}</li>
-    <li><strong>Plants newly purchased:</strong> {{ num_instances_purchased }}</li>
-    <li><strong>Locations:</strong> {{ num_locations }}</li>
-  </ul>
-  <p>You have visited this page {{ num_visits }} time{{ num_visits|pluralize }}.</p>
+  <h1>Petrichor</h1>
+  <hr>
+  <h4>Petrichor <em>pet-ri-chor</em> : the smell of rain after a long period of warm, dry weather.</h4>
+  {% if user.is_staff %}
+    <h2>Dynamic content</h2>
+    <p>The nursery has the following record counts:</p>
+    <ul>
+      <li><strong>Type of Plants:</strong> {{ num_plants }}</li>
+      <li><strong>Total Count:</strong> {{ num_instances }}</li>
+      <li><strong>Plants newly purchased:</strong> {{ num_instances_purchased }}</li>
+      <li><strong>Locations:</strong> {{ num_locations }}</li>
+    </ul>
+    <p>You have visited this page {{ num_visits }} time{{ num_visits|pluralize }}.</p>
+  {% endif %}
 {% endblock %}

@@ -1,15 +1,9 @@
 from django.contrib import admin
-from .models import CommonName, Plant, PlantInstance, Location
+from .models import Plant, PlantInstance, Location
 
-#admin.site.register(CommonName)
 #admin.site.register(Plant)
 #admin.site.register(PlantInstance)
 #admin.site.register(Location)
-
-# Register the Admin classes for CommonName using the decorator
-@admin.register(CommonName)
-class CommonNameAdmin(admin.ModelAdmin):
-    pass
 
 class PlantInstanceInline(admin.StackedInline):
     model = PlantInstance
@@ -21,7 +15,7 @@ class PlantInstanceInline(admin.StackedInline):
 @admin.register(Plant)
 class PlantAdmin(admin.ModelAdmin):
     list_display = ('scientific_name', 'common_name', 'water', 'sun', 'description', 'care_tips', 'user')
-
+    list_filter = ('user', 'scientific_name')
     fields = ['user', ('scientific_name', 'common_name'), ('water', 'sun'), 'description', 'care_tips']
 
     inlines = [PlantInstanceInline]
@@ -38,4 +32,8 @@ class PlantInstanceAdmin(admin.ModelAdmin):
 # Register the Admin classes for Location using the decorator
 @admin.register(Location)
 class LocationAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('name', 'user')
+    list_filter = ('name', 'user')
+    fields = ['name', 'user']
+
+    inlines = [PlantInstanceInline]

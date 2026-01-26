@@ -74,12 +74,14 @@ class PlantDetailView(generic.DetailView):
         
         return context
 
+
 class LocationListView(generic.ListView):
     model = Location
     paginate_by = 10
 
 class LocationDetailView(generic.DetailView):
     model = Location
+
 
 class PlantInstanceStaffOnlyListView(UserPassesTestMixin, generic.ListView):
     """Generic class-based view listing all plant instances if user is staff."""
@@ -165,7 +167,7 @@ def renew_due_watered_date(request, pk):
 
     return render(request, 'nursery/renew_due_watered_date.html', context)
  
-## CRUD Operations ##
+## ***** CRUD Operations ***** ##
 
 class PlantCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView): 
     model = Plant 
@@ -225,11 +227,22 @@ class PlantInstanceCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateVie
     model = PlantInstance 
     fields = ['plant', 'nickname', 'location', 'purchased', 'due_watered', 'status']
     proposed_due_watered_date = datetime.date.today() + datetime.timedelta(weeks=2) 
-    initial = {'status': 'n', 
+    initial = {'status': 'w', 
                'purchased': datetime.date.today(),
                'due_watered': proposed_due_watered_date}
     permission_required = 'nursery.add_plantinstance'
 
+    # filter queryset for plant drop-down by user or staff
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class=None)
+        # if user is staff don't filter queryset and just return
+        if self.request.user.is_staff:
+            return form
+        else:
+            form.fields['plant'].queryset = form.fields['plant'].queryset.filter(user=self.request.user)
+        return form
+
+    # This shows up after form submission, in definition
     def form_valid(self, form):
         form.instance.customer = self.request.user
         return super().form_valid(form)
@@ -239,6 +252,14 @@ class PlantInstanceCreateFromPlant(LoginRequiredMixin, PermissionRequiredMixin, 
     fields = ['plant', 'nickname', 'location', 'purchased', 'due_watered', 'status']
     permission_required = 'nursery.add_plantinstance'
 
+    # filter queryset for plant drop-down by user or staff
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class=None)
+        if self.request.user.is_staff:
+            return form
+        else:
+            form.fields['plant'].queryset = form.fields['plant'].queryset.filter(user=self.request.user)
+        return form
     
     # Set the initial value for a specific field
     # The value should be the primary key or the actual object instance if it's a ForeignKey/ModelChoiceField
@@ -249,12 +270,13 @@ class PlantInstanceCreateFromPlant(LoginRequiredMixin, PermissionRequiredMixin, 
         proposed_due_watered_date = datetime.date.today() + datetime.timedelta(weeks=2)
         initial = super().get_initial()
 
-        initial['status'] = 'n'
+        initial['status'] = 'w'
         initial['purchased'] = datetime.date.today()
         initial['due_watered'] = proposed_due_watered_date
         initial['plant'] = plant
 
         return initial
+    
     # This shows up after form submission, in definition
     def form_valid(self, form):
         form.instance.customer = self.request.user
@@ -262,7 +284,7 @@ class PlantInstanceCreateFromPlant(LoginRequiredMixin, PermissionRequiredMixin, 
 
 class PlantInstanceUpdate(PermissionRequiredMixin, UpdateView):
     model = PlantInstance 
-    fields = ['plant', 'customer', 'nickname', 'location', 'purchased', 'due_watered', 'status'] 
+    fields = ['plant', 'nickname', 'location', 'purchased', 'due_watered', 'status'] 
     permission_required = 'nursery.change_plantinstance' 
 
     def get_queryset(self):
@@ -300,3 +322,4 @@ class PlantInstanceDelete(PermissionRequiredMixin, DeleteView):
                 return HttpResponseRedirect( reverse("plant-instance-delete", kwargs={"pk": self.object.pk}) )
         except Exception as e: 
             return HttpResponseRedirect( reverse("plant-instance-delete", kwargs={"pk": self.object.pk}) )
+        

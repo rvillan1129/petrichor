@@ -19,9 +19,6 @@ def index(request):
     num_plants = Plant.objects.all().count()
     num_instances = PlantInstance.objects.all().count()
 
-    # Available books (status = 'a')
-    num_instances_purchased = PlantInstance.objects.filter(status__exact='p').count()
-
     # The 'all()' is implied by default.
     num_locations = Location.objects.count()
     num_users = User.objects.count()
@@ -34,7 +31,6 @@ def index(request):
     context = {
         'num_plants': num_plants,
         'num_instances': num_instances,
-        'num_instances_purchased': num_instances_purchased,
         'num_locations': num_locations,
         'num_visits': num_visits,
         'num_users': num_users,
@@ -145,19 +141,6 @@ class PlantInstanceByUserListView(LoginRequiredMixin, generic.ListView):
             PlantInstance.objects.filter(customer=self.request.user)
             .order_by('due_watered')
         )
-
-class WateredPlantsByUserListView(LoginRequiredMixin,generic.ListView):
-    """Generic class-based view listing watered plants by current user."""
-    model = PlantInstance
-    template_name = 'nursery/plantinstance_list_watered_user.html'
-    paginate_by = 10
-
-    def get_queryset(self):
-        return (
-            PlantInstance.objects.filter(customer=self.request.user)
-            .filter(status__exact='w')
-            .order_by('due_watered')
-        )
     
 class DueWateredPlantsByUserListView(LoginRequiredMixin,generic.ListView):
     """Generic class-based view listing plants due watered by current user."""
@@ -187,7 +170,6 @@ def renew_due_watered_date(request, pk):
         if form.is_valid():
             # process the data in form.cleaned_data as required (here we just write it to the model due_watered field)
             plant_instance.due_watered = form.cleaned_data['renewal_date']
-            plant_instance.status = 'w'
             plant_instance.save()
 
             # redirect to a new URL:
@@ -263,10 +245,9 @@ class PlantDelete(PermissionRequiredMixin, DeleteView):
 
 class PlantInstanceCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView): 
     model = PlantInstance 
-    fields = ['plant', 'nickname', 'location', 'purchased', 'due_watered', 'status']
+    fields = ['plant', 'nickname', 'location', 'purchased', 'due_watered']
     proposed_due_watered_date = datetime.date.today() + datetime.timedelta(weeks=2) 
-    initial = {'status': 'w', 
-               'purchased': datetime.date.today(),
+    initial = {'purchased': datetime.date.today(),
                'due_watered': proposed_due_watered_date}
     permission_required = 'nursery.add_plantinstance'
 
@@ -288,7 +269,7 @@ class PlantInstanceCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateVie
 
 class PlantInstanceCreateFromPlant(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = PlantInstance 
-    fields = ['plant', 'nickname', 'location', 'purchased', 'due_watered', 'status']
+    fields = ['plant', 'nickname', 'location', 'purchased', 'due_watered']
     permission_required = 'nursery.add_plantinstance'
 
     # filter queryset for plant drop-down by user or staff
@@ -310,7 +291,6 @@ class PlantInstanceCreateFromPlant(LoginRequiredMixin, PermissionRequiredMixin, 
         proposed_due_watered_date = datetime.date.today() + datetime.timedelta(weeks=2)
         initial = super().get_initial()
 
-        initial['status'] = 'w'
         initial['purchased'] = datetime.date.today()
         initial['due_watered'] = proposed_due_watered_date
         initial['plant'] = plant
@@ -324,7 +304,7 @@ class PlantInstanceCreateFromPlant(LoginRequiredMixin, PermissionRequiredMixin, 
     
 class PlantInstanceCreateFromLocation(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = PlantInstance 
-    fields = ['plant', 'nickname', 'location', 'purchased', 'due_watered', 'status']
+    fields = ['plant', 'nickname', 'location', 'purchased', 'due_watered']
     permission_required = 'nursery.add_plantinstance'
 
     # filter queryset for plant drop-down by user or staff
@@ -346,7 +326,6 @@ class PlantInstanceCreateFromLocation(LoginRequiredMixin, PermissionRequiredMixi
         proposed_due_watered_date = datetime.date.today() + datetime.timedelta(weeks=2)
         initial = super().get_initial()
 
-        initial['status'] = 'w'
         initial['purchased'] = datetime.date.today()
         initial['due_watered'] = proposed_due_watered_date
         initial['location'] = location
@@ -360,7 +339,7 @@ class PlantInstanceCreateFromLocation(LoginRequiredMixin, PermissionRequiredMixi
 
 class PlantInstanceUpdate(PermissionRequiredMixin, UpdateView):
     model = PlantInstance 
-    fields = ['plant', 'nickname', 'location', 'purchased', 'due_watered', 'status'] 
+    fields = ['plant', 'nickname', 'location', 'purchased', 'due_watered'] 
     permission_required = 'nursery.change_plantinstance' 
 
     def get_queryset(self):
@@ -371,7 +350,7 @@ class PlantInstanceUpdate(PermissionRequiredMixin, UpdateView):
 
 class PlantInstanceUpdateStaffOnly(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = PlantInstance 
-    fields = ['plant', 'customer', 'nickname', 'location', 'purchased', 'due_watered', 'status'] 
+    fields = ['plant', 'customer', 'nickname', 'location', 'purchased', 'due_watered'] 
     permission_required = 'nursery.change_plantinstance' 
 
     def test_func(self):

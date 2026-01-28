@@ -92,19 +92,6 @@ class PlantInstance(models.Model):
     purchased = models.DateField(null=True, blank=True, help_text='date plant was purchase')
     due_watered = models.DateField(null=True, blank=True, help_text='next watering date')
 
-    WATERED_STATUS = (
-        ('w', 'watered'),
-        ('n', 'not watered'),
-    )
-
-    status = models.CharField(
-        max_length=1,
-        choices=WATERED_STATUS,
-        blank=True,
-        default='w',
-        help_text='plant watered status',
-    )
-
     id = models.UUIDField(primary_key=True, default=uuid.uuid4,
                           help_text="Unique ID for this particular plant across whole nursery")
     
@@ -113,12 +100,6 @@ class PlantInstance(models.Model):
         """Determines if the plant is overdue to be watered on due date and current date."""
 
         return bool(self.due_watered and (date.today() >= self.due_watered))
-
-    @property
-    def is_not_watered(self):
-        """Determines if the plant has not been watered."""
-
-        return bool(self.status and (self.status == 'n'))
 
     class Meta:
         ordering = ['customer','nickname']

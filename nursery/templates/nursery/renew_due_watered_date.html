@@ -4,7 +4,7 @@
   <h1>Water: {{plant_instance.nickname}} ({{ plant_instance.plant.scientific_name }})</h1>
   <p>Owner: {{ plant_instance.customer }}</p>
   <p>Due watered date: 
-    <span {% if not plant_instance.is_overdue_watered %}text-success{% elif plant_instance.is_overdue_watered %} class="text-danger"{% endif %}>
+    <span {% if not plant_instance.is_overdue_watered %}class='text-success'{% elif plant_instance.is_overdue_watered %}class="text-danger"{% endif %}>
       {{ plant_instance.due_watered }}
     </span>
   </p>

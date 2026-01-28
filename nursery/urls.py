@@ -15,7 +15,6 @@ urlpatterns = [
 urlpatterns += [
     path('myplanttemplates/', views.PlantByUserListView.as_view(), name='user-plant-templates'),
     path('myplants/', views.PlantInstanceByUserListView.as_view(), name='my-plants'),
-    path('mywateredplants/', views.WateredPlantsByUserListView.as_view(), name='my-watered'),
     path('myduewateredplants/', views.DueWateredPlantsByUserListView.as_view(), name='my-due-watered'),
 ]
 

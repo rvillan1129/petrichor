@@ -2,7 +2,7 @@
 
 {% block content %}
   <h1>{{ plantinstance.nickname }}</h1>
-
+  <hr>
   <p><strong>Plant:</strong> <a href="{% url 'plant-detail' plantinstance.plant.pk %}">{{ plantinstance.plant }}</a></p>
   <p><strong>Common Name:</strong> {{ plantinstance.plant.common_name }}</p>
   <p><strong>location:</strong> <a href="{{ plantinstance.location.get_absolute_url }}">{{ plantinstance.location }}</a></p>
@@ -11,12 +11,6 @@
     <strong>Due Watered:</strong> 
     <span class="{% if not plantinstance.is_overdue_watered %}text-success{% elif plantinstance.is_overdue_watered %}text-danger{% endif %}">
       {{ plantinstance.due_watered }}
-    </span>
-  </p>
-  <p>
-    <strong>Watered Status:</strong> 
-    <span class="{% if not plantinstance.is_not_watered %}text-success{% elif plantinstance.is_not_watered %}text-danger{% endif %}">
-      {{ plantinstance.get_status_display }}
     </span>
   </p>  
 {% endblock %}
@@ -34,6 +28,9 @@
       {% endif %}
       {% if perms.nursery.delete_plantinstance %} 
         <li><a href="{% url 'plant-instance-delete' plantinstance.id %}">Delete Plant</a></li> 
+      {% endif %}
+      {% if plantinstance.is_overdue_watered %}
+        <li><a href="{% url 'renew-due-watered-date' plantinstance.id %}">Water Plant</a></li>
       {% endif %}
       {% if user.is_staff %}
         <li>*~~~~~~~~~*</li>  

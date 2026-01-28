@@ -27,15 +27,14 @@
         {% endif %}
         <p><strong>Nickname:</strong> <a href="{{ plantinst.get_absolute_url }}">{{ plantinst.nickname }}</a></p>
         <p><strong>Location:</strong> <a href="{{ plantinst.location.get_absolute_url }}">{{ plantinst.location }}</a></p>
-        <p>
-          <strong>Watered Status:</strong>
-          <span class="{% if plantinst.status == 'w' %}text-success{% elif plantinst.status == 'n' %}text-danger{% else %}text-warning{% endif %}">
-            {{ plantinst.get_status_display }}
+        <p><strong>Due to be watered:</strong>
+          <span class="{% if plantinst.is_overdue_watered %}text-danger{% elif not plantinst.is_overdue_watered %}text-success{% else %}text-warning{% endif %}">
+            {{ plantinst.due_watered }}
           </span>
+          {% if plantinst.is_overdue_watered %}
+            - <a href="{% url 'renew-due-watered-date' plantinst.id %}">Water</a>
+          {% endif %} 
         </p>
-        {% if plantinst.status != 'w' %}
-          <p><strong>Due to be watered:</strong> {{ plantinst.due_watered }}</p>
-        {% endif %}
       {% endfor %}
     {% else %}
         <hr>

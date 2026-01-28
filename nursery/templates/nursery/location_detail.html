@@ -17,14 +17,11 @@
         <p><strong>Nickname:</strong> <a href="{{ purchasedPlant.get_absolute_url }}">{{ purchasedPlant.nickname }}</a></p>
         <p><strong>Plant:</strong> <a href="{{ purchasedPlant.plant.get_absolute_url }}">{{ purchasedPlant.plant.scientific_name }}</a></p>
         <p>
-          <strong>Watered Status:</strong> 
-          <span class="{% if purchasedPlant.status == 'w' %}text-success{% elif purchasedPlant.status == 'n' %}text-danger{% else %}text-warning{% endif %}">
-            {{ purchasedPlant.get_status_display }}
+          <strong>Due to be watered:</strong> 
+          <span class="{% if purchasedPlant.is_overdue_watered %}text-danger{% else %}text-success{% endif %}">
+            {{ purchasedPlant.due_watered }}
           </span>
         </p>
-        {% if purchasedPlant.status != 'w' %}
-          <p><strong>Due to be watered:</strong> {{ purchasedPlant.due_watered }}</p>
-        {% endif %}
       {% endfor %}
     {% else %}
         <h4>There are no Plants in this Location</h4>

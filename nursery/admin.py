@@ -8,8 +8,8 @@ from .models import Plant, PlantInstance, Location
 class PlantInstanceInline(admin.StackedInline):
     model = PlantInstance
     extra = 0
-    fields = ['nickname', 'location', ('purchased', 'due_watered'), 'status', 'id']
-    readonly_fields = ['nickname', 'location', 'purchased', 'due_watered', 'status', 'id']
+    fields = ['nickname', 'location', ('purchased', 'due_watered'), 'id']
+    readonly_fields = ['nickname', 'location', 'purchased', 'due_watered', 'id']
 
 # Register the Admin classes for Plant using the decorator
 @admin.register(Plant)
@@ -23,10 +23,10 @@ class PlantAdmin(admin.ModelAdmin):
 # Register the Admin classes for PlantInstance using the decorator
 @admin.register(PlantInstance)
 class PlantInstanceAdmin(admin.ModelAdmin):
-    list_display = ('nickname', 'plant', 'display_common_name', 'customer','location', 'status', 'due_watered')
-    list_filter = ('status', 'due_watered')
+    list_display = ('nickname', 'plant', 'display_common_name', 'customer','location', 'due_watered')
+    list_filter = ('due_watered',)
 
-    fields = ['plant', 'nickname', 'location', 'customer', ('purchased', 'due_watered'), 'status', 'id']
+    fields = ['plant', 'nickname', 'location', 'customer', ('purchased', 'due_watered'), 'id']
     readonly_fields = ['id']
 
 # Register the Admin classes for Location using the decorator

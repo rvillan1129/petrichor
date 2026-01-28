@@ -3,16 +3,19 @@
 {% block content %}
   <h1>{{ location.name }}</h1>
   <ul>
-    <li><a href="{% url 'plant-instance-create-from-location' location.id %}">Add Plant to Location</a></li>
+    <li><a href="{% url 'plant-instance-create-from-location' location.id %}">Add Plant to this Location</a></li>
   </ul>
   <div style="margin-left:20px;margin-top:20px">
     {% if  plantinstance_list %}
       <h4>All Plants in this Room</h4>
       {% for purchasedPlant in plantinstance_list %}
         <hr />
-        <p><strong>Owner:</strong> {{ purchasedPlant.customer }}</p>
-        <p><strong>Plant:</strong> <a href="{{ purchasedPlant.plant.scientific_name.get_absolute_url }}">{{ purchasedPlant.plant.scientific_name }}</a></p>
+        {% if user.is_staff %} 
+          <p><strong>*~STAFF VIEW~*</strong></p>
+          <p><strong>Owner:</strong> {{ purchasedPlant.customer }}</p>
+        {% endif %}
         <p><strong>Nickname:</strong> <a href="{{ purchasedPlant.get_absolute_url }}">{{ purchasedPlant.nickname }}</a></p>
+        <p><strong>Plant:</strong> <a href="{{ purchasedPlant.plant.get_absolute_url }}">{{ purchasedPlant.plant.scientific_name }}</a></p>
         <p>
           <strong>Watered Status:</strong> 
           <span class="{% if purchasedPlant.status == 'w' %}text-success{% elif purchasedPlant.status == 'n' %}text-danger{% else %}text-warning{% endif %}">
@@ -27,4 +30,28 @@
         <h4>There are no Plants in this Location</h4>
     {% endif %}
   </div>
+{% endblock %}
+
+{% block sidebar %} 
+  {{ block.super }} 
+  {% if perms.nursery.change_location or perms.nursery.delete_location %} 
+    <hr> 
+    <ul class="sidebar-nav"> 
+      {% if user.is_staff %}
+        <li>*~STAFF VIEW~*</li> 
+        <li><a href="{% url 'staff-location-update' location.id %}">Edit Location</a></li>
+      {% elif perms.nursery.change_location %} 
+        <li><a href="{% url 'location-update' location.id %}">Edit Location</a></li> 
+      {% endif %}
+       
+      {% if not location.plantinstance_set.all and perms.nursery.delete_location %} 
+        <li><a href="{% url 'location-delete' location.id %}">Delete Location</a></li>
+      {% else %}
+        <li><s>Delete Location</s></li> 
+      {% endif %} 
+      {% if user.is_staff %}
+        <li>*~~~~~~~~~*</li>
+      {% endif %}
+    </ul> 
+  {% endif %} 
 {% endblock %}

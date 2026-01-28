@@ -27,7 +27,9 @@ urlpatterns += [
     path('plant/create/', views.PlantCreate.as_view(), name='plant-create'), 
     path('plant/<int:pk>/update/', views.PlantUpdate.as_view(), name='plant-update'), 
     path('plant/<int:pk>/delete/', views.PlantDelete.as_view(), name='plant-delete'),
-    path('location/create/', views.LocationCreate.as_view(), name='location-create'), ]
+    path('location/create/', views.LocationCreate.as_view(), name='location-create'),
+    path('location/<int:pk>/update/', views.LocationUpdate.as_view(), name='location-update'), 
+    path('location/<int:pk>/delete/', views.LocationDelete.as_view(), name='location-delete'),]
 
 urlpatterns += [ 
     path('plantinstance/create/', views.PlantInstanceCreate.as_view(), name='plant-instance-create'),
@@ -37,6 +39,7 @@ urlpatterns += [
     path('plantinstance/<uuid:pk>/delete/', views.PlantInstanceDelete.as_view(), name='plant-instance-delete'),]
 
 urlpatterns += [
+    path('staff/location/<int:pk>/update/', views.LocationUpdateStaffOnly.as_view(), name='staff-location-update'),
     path('staff/plant/<int:pk>/update/', views.PlantUpdateStaffOnly.as_view(), name='staff-plant-update'),
     path('staff/plantinstance/<uuid:pk>/update/', views.PlantInstanceUpdateStaffOnly.as_view(), name='staff-plant-instance-update'), 
 ]

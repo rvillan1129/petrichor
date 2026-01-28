@@ -71,9 +71,13 @@ class PlantDetailView(generic.DetailView):
         # Call the base implementation first to get a context
         context = super().get_context_data(**kwargs)
         
-        # Add in a QuerySet of all related plant instances for this user
-        # self.object refers to the publisher instance retrieved by DetailView
-        context["plantinstance_list"] = PlantInstance.objects.filter(customer=self.object.user).filter(plant=self.object)
+        # Add in a QuerySet to filter related plant instances
+        if self.request.user.is_staff:
+            # if user is staff, grab all instances related to this Plant
+            # self.object refers to the publisher instance retrieved by DetailView
+            context["plantinstance_list"] = PlantInstance.objects.filter(customer=self.object.user).filter(plant=self.object)
+        else:
+            context["plantinstance_list"] = PlantInstance.objects.filter(customer=self.request.user).filter(plant=self.object)
         
         return context
 
@@ -106,9 +110,13 @@ class LocationDetailView(generic.DetailView):
         # Call the base implementation first to get a context
         context = super().get_context_data(**kwargs)
         
-        # Add in a QuerySet of all related plant instances for this user
-        # self.object refers to the publisher instance retrieved by DetailView
-        context["plantinstance_list"] = PlantInstance.objects.filter(customer=self.object.user).filter(location=self.object)
+        # Add in a QuerySet to filter related plant instances
+        if self.request.user.is_staff:
+            # if user is staff, grab all instances related to this Plant
+            # self.object refers to the publisher instance retrieved by DetailView
+            context["plantinstance_list"] = PlantInstance.objects.filter(customer=self.object.user).filter(location=self.object)
+        else:
+            context["plantinstance_list"] = PlantInstance.objects.filter(customer=self.request.user).filter(location=self.object)
         
         return context
 
@@ -390,6 +398,7 @@ class PlantInstanceDelete(PermissionRequiredMixin, DeleteView):
                 return HttpResponseRedirect( reverse("plant-instance-delete", kwargs={"pk": self.object.pk}) )
         except Exception as e: 
             return HttpResponseRedirect( reverse("plant-instance-delete", kwargs={"pk": self.object.pk}) )
+
         
 class LocationCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView): 
     model = Location 
@@ -400,3 +409,45 @@ class LocationCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
         # set Location user equal to user creating location
         form.instance.user = self.request.user
         return super().form_valid(form)
+    
+class LocationUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView): 
+    model = Location 
+    fields = ['name',] 
+    permission_required = 'nursery.change_location'
+    
+    def get_queryset(self):
+        # Start with the base queryset
+        queryset = super().get_queryset()
+        # Further filter the queryset to include only objects created by the current user
+        return queryset.filter(user=self.request.user)
+    
+class LocationUpdateStaffOnly(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Location
+    fields = ['name', 'user']
+    permission_required = 'nursery.change_location'
+
+
+    def test_func(self):
+        # test if user is staff
+        return self.request.user.is_staff
+    
+class LocationDelete(PermissionRequiredMixin, DeleteView): 
+    model = Location
+    success_url = reverse_lazy('my-locations')  
+    permission_required = 'nursery.delete_location' 
+    
+    def form_valid(self, form): 
+        try: 
+            obj = self.object
+            
+            if self.request.user.is_staff:
+                obj.delete() 
+                return HttpResponseRedirect(reverse_lazy('locations')) 
+            elif obj.user == self.request.user:
+                obj.delete() 
+                return HttpResponseRedirect(self.success_url) 
+            else:
+                messages.error(self.request, "Error: You are not allowed to delete this Location.")
+                return HttpResponseRedirect( reverse("location-delete", kwargs={"pk": self.object.pk}) )
+        except Exception as e: 
+            return HttpResponseRedirect( reverse("location-delete", kwargs={"pk": self.object.pk}) )

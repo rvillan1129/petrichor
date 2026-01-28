@@ -2,9 +2,9 @@
 
 {% block content %} 
 
-<h1>Delete Plant Instance: {{ plantinstance }}</h1> 
+<h1>Delete Plant: {{ plantinstance.nickname }}</h1> 
  
-<p>Are you sure you want to delete the plant instance?</p> 
+<p>Are you sure you want to delete this Plant?</p> 
 <form action="" method="POST"> 
     {% csrf_token %} 
     <input type="submit" action="" value="Yes, delete."> 

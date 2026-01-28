@@ -1,0 +1,24 @@
+{% extends "base_generic.html" %} 
+
+{% block content %} 
+
+<h1>Delete Location: {{ location }}</h1> 
+
+{% if location.plantinstance_set.all %} 
+<p>You can't delete this location until all plant instances in location have been deleted:</p> 
+<ul> 
+    {% for plant in location.plantinstance_set.all %} 
+    <li>
+        <a href="{% url 'plant-instance-detail' plant.id %}">{{plant.nickname}}</a> ({{location.plantinstance_set.all.count}})
+    </li> 
+    {% endfor %} 
+</ul> 
+{% else %} 
+<p>Are you sure you want to delete this Location?</p> 
+<form action="" method="POST"> 
+    {% csrf_token %} 
+    <input type="submit" action="" value="Yes, delete."> 
+</form> 
+{% endif %} 
+
+{% endblock %}

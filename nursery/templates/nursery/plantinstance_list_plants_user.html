@@ -8,7 +8,6 @@
     </ul>
     {% if plantinstance_list %}
     <ul>
-
       {% for plantinst in plantinstance_list %}
       <li class="{% if not plantinst.is_overdue_watered %}text-success{% elif plantinst.is_overdue_watered %}text-danger{% endif %}">
         <a href="{% url 'plant-instance-detail' plantinst.pk %}">{{ plantinst.nickname }}</a> ({{ plantinst.due_watered }}) 

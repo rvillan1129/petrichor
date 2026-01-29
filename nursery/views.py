@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404, Http404
+from django.utils.http import url_has_allowed_host_and_scheme
 from .models import Plant, PlantInstance, Location
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.auth.models import User
@@ -190,11 +191,15 @@ def renew_due_watered_date(request, pk):
 @login_required 
 def snooze(request, pk):
     """View function for renewing due watered date for a specific PlantInstance."""
+
     plant_instance = get_object_or_404(PlantInstance, pk=pk)
     chosen_snooze = plant_instance.snooze
+
     # If this is a POST request then process the Form data
     if request.method == 'POST':
-
+        # Get the value of the 'next' parameter from the query string
+        next_url = request.GET.get('next')
+        
         if chosen_snooze == '1w':
             pushed_date =  datetime.date.today() + datetime.timedelta(weeks=1)
         elif chosen_snooze == '1d':
@@ -208,8 +213,13 @@ def snooze(request, pk):
         plant_instance.due_watered = pushed_date
         plant_instance.save()
 
-        # redirect to a new URL:
-        return HttpResponseRedirect(reverse('my-plants'))
+        # Security check: Ensure the 'next' URL is safe to redirect to 
+        # to prevent open redirect vulnerabilities.
+        # The 'request.get_host()' part helps validate the URL is on the same domain.
+        if next_url and url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
+            return HttpResponseRedirect(next_url)
+        else:
+            return HttpResponseRedirect(reverse('my-plants'))
     
     else:
         messages.error(request, "Error: something isn't right.")

@@ -28,7 +28,7 @@
                 <a href="{% url 'renew-due-watered-date' plantinst.id %}">Water</a>
               </li>
               <li>
-                <form id="snooze-form" method="post" action="{% url 'snooze' plantinst.id %}">
+                <form id="snooze-form" method="post" action="{% url 'snooze' plantinst.id %}?next={{ request.path }}">
                   {% csrf_token %}
                   <button type="submit" class="btn btn-link">Snooze</button>
                 </form>

@@ -346,7 +346,7 @@ class PlantInstanceCreateFromLocation(LoginRequiredMixin, PermissionRequiredMixi
     fields = ['plant', 'nickname', 'location', 'purchased', 'due_watered', 'snooze']
     permission_required = 'nursery.add_plantinstance'
 
-    # filter queryset for plant drop-down by user or staff
+    # filter queryset for plant and location drop-down, by user or staff
     def get_form(self, form_class=None):
         form = super().get_form(form_class=None)
         if self.request.user.is_staff:
@@ -386,6 +386,16 @@ class PlantInstanceUpdate(PermissionRequiredMixin, UpdateView):
         queryset = super().get_queryset()
         # Further filter the queryset to include only objects created by the current user
         return queryset.filter(customer=self.request.user)
+    
+    # filter queryset for plant and location drop-down, by user or staff
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class=None)
+        if self.request.user.is_staff:
+            return form
+        else:
+            form.fields['plant'].queryset = form.fields['plant'].queryset.filter(user=self.request.user)
+            form.fields['location'].queryset = form.fields['location'].queryset.filter(user=self.request.user)
+        return form
 
 class PlantInstanceUpdateStaffOnly(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = PlantInstance 

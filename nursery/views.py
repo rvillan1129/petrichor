@@ -186,7 +186,36 @@ def renew_due_watered_date(request, pk):
     }
 
     return render(request, 'nursery/renew_due_watered_date.html', context)
- 
+
+@login_required 
+def snooze(request, pk):
+    """View function for renewing due watered date for a specific PlantInstance."""
+    plant_instance = get_object_or_404(PlantInstance, pk=pk)
+    chosen_snooze = plant_instance.snooze
+    # If this is a POST request then process the Form data
+    if request.method == 'POST':
+
+        if chosen_snooze == '1w':
+            pushed_date =  datetime.date.today() + datetime.timedelta(weeks=1)
+        elif chosen_snooze == '1d':
+            pushed_date =  datetime.date.today() + datetime.timedelta(days=1)
+        elif chosen_snooze == '3d':
+            pushed_date = datetime.date.today() + datetime.timedelta(days=3)
+        else:
+            messages.error(request, "Error: You have not chosen snooze time.")
+            return HttpResponseRedirect( reverse("my-plants", kwargs={"pk": plant_instance.pk}) )
+        
+        plant_instance.due_watered = pushed_date
+        plant_instance.save()
+
+        # redirect to a new URL:
+        return HttpResponseRedirect(reverse('my-plants'))
+    
+    else:
+        messages.error(request, "Error: something isn't right.")
+        # redirect to a new URL:
+        return HttpResponseRedirect(reverse('my-plants'))
+
 ## ***** CRUD Operations ***** ##
 
 class PlantCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView): 
@@ -245,7 +274,7 @@ class PlantDelete(PermissionRequiredMixin, DeleteView):
 
 class PlantInstanceCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView): 
     model = PlantInstance 
-    fields = ['plant', 'nickname', 'location', 'purchased', 'due_watered']
+    fields = ['plant', 'nickname', 'location', 'purchased', 'due_watered', 'snooze']
     proposed_due_watered_date = datetime.date.today() + datetime.timedelta(weeks=2) 
     initial = {'purchased': datetime.date.today(),
                'due_watered': proposed_due_watered_date}
@@ -269,7 +298,7 @@ class PlantInstanceCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateVie
 
 class PlantInstanceCreateFromPlant(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = PlantInstance 
-    fields = ['plant', 'nickname', 'location', 'purchased', 'due_watered']
+    fields = ['plant', 'nickname', 'location', 'purchased', 'due_watered', 'snooze']
     permission_required = 'nursery.add_plantinstance'
 
     # filter queryset for plant drop-down by user or staff
@@ -304,7 +333,7 @@ class PlantInstanceCreateFromPlant(LoginRequiredMixin, PermissionRequiredMixin, 
     
 class PlantInstanceCreateFromLocation(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = PlantInstance 
-    fields = ['plant', 'nickname', 'location', 'purchased', 'due_watered']
+    fields = ['plant', 'nickname', 'location', 'purchased', 'due_watered', 'snooze']
     permission_required = 'nursery.add_plantinstance'
 
     # filter queryset for plant drop-down by user or staff
@@ -339,7 +368,7 @@ class PlantInstanceCreateFromLocation(LoginRequiredMixin, PermissionRequiredMixi
 
 class PlantInstanceUpdate(PermissionRequiredMixin, UpdateView):
     model = PlantInstance 
-    fields = ['plant', 'nickname', 'location', 'purchased', 'due_watered'] 
+    fields = ['plant', 'nickname', 'location', 'purchased', 'due_watered', 'snooze'] 
     permission_required = 'nursery.change_plantinstance' 
 
     def get_queryset(self):
@@ -350,7 +379,7 @@ class PlantInstanceUpdate(PermissionRequiredMixin, UpdateView):
 
 class PlantInstanceUpdateStaffOnly(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = PlantInstance 
-    fields = ['plant', 'customer', 'nickname', 'location', 'purchased', 'due_watered'] 
+    fields = ['plant', 'customer', 'nickname', 'location', 'purchased', 'due_watered', 'snooze'] 
     permission_required = 'nursery.change_plantinstance' 
 
     def test_func(self):

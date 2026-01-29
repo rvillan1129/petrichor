@@ -30,7 +30,7 @@
                   </form>
                 </li>
               {% else %}
-                {% if not request.path == '/accounts/logout/' %}
+                {% if not request.path == '/accounts/logout/' and not request.path == '/admin/logout/'%}
                   <li><a href="{% url 'login' %}?next={{ request.path }}">Login</a></li>
                 {% else %}
                   <li><a href="{% url 'login' %}">Login</a></li>

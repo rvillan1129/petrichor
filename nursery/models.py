@@ -92,6 +92,20 @@ class PlantInstance(models.Model):
     purchased = models.DateField(null=True, blank=True, help_text='date plant was purchase')
     due_watered = models.DateField(null=True, blank=True, help_text='next watering date')
 
+    SNOOZE_TIME = (
+        ('1d', '1 Day'),
+        ('3d', '3 Days'),
+        ('1w', '1 Week'),
+    )
+
+    snooze = models.CharField(
+        max_length=2,
+        choices=SNOOZE_TIME,
+        blank=False,
+        default='3d',
+        help_text='push watering date forward this amount of time',
+    ) 
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4,
                           help_text="Unique ID for this particular plant across whole nursery")
     

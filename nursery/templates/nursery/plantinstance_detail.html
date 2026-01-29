@@ -31,6 +31,12 @@
       {% endif %}
       {% if plantinstance.is_overdue_watered %}
         <li><a href="{% url 'renew-due-watered-date' plantinstance.id %}">Water Plant</a></li>
+        <li>
+          <form id="snooze-form" method="post" action="{% url 'snooze' plantinstance.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-link">Snooze</button>
+          </form>
+        </li>
       {% endif %}
       {% if user.is_staff %}
         <li>*~~~~~~~~~*</li>  

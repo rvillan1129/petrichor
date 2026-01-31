@@ -326,10 +326,15 @@ class PlantInstanceCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateVie
             form.fields['location'].queryset = form.fields['location'].queryset.filter(user=self.request.user)
         return form
 
-    # This shows up after form submission, in definition
     def form_valid(self, form):
         form.instance.customer = self.request.user
-        return super().form_valid(form)
+        try:
+            return super().form_valid(form)
+        # catch duplicate entry error returned from database
+        # not the best way to handle this. Would be better to validate before form submission.
+        except IntegrityError:
+            messages.error(self.request, "This Plant already exists.")
+            return self.form_invalid(form)
 
 class PlantInstanceCreateFromPlant(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = PlantInstance 
@@ -361,10 +366,15 @@ class PlantInstanceCreateFromPlant(LoginRequiredMixin, PermissionRequiredMixin, 
 
         return initial
     
-    # This shows up after form submission, in definition
     def form_valid(self, form):
         form.instance.customer = self.request.user
-        return super().form_valid(form)
+        try:
+            return super().form_valid(form)
+        # catch duplicate entry error returned from database
+        # not the best way to handle this. Would be better to validate before form submission.
+        except IntegrityError:
+            messages.error(self.request, "This Plant already exists.")
+            return self.form_invalid(form)
     
 class PlantInstanceCreateFromLocation(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = PlantInstance 
@@ -396,10 +406,15 @@ class PlantInstanceCreateFromLocation(LoginRequiredMixin, PermissionRequiredMixi
 
         return initial
     
-    # This shows up after form submission, in definition
     def form_valid(self, form):
         form.instance.customer = self.request.user
-        return super().form_valid(form)
+        try:
+            return super().form_valid(form)
+        # catch duplicate entry error returned from database
+        # not the best way to handle this. Would be better to validate before form submission.
+        except IntegrityError:
+            messages.error(self.request, "This Plant already exists.")
+            return self.form_invalid(form)
 
 class PlantInstanceUpdate(PermissionRequiredMixin, UpdateView):
     model = PlantInstance 
@@ -421,6 +436,15 @@ class PlantInstanceUpdate(PermissionRequiredMixin, UpdateView):
             form.fields['plant'].queryset = form.fields['plant'].queryset.filter(user=self.request.user)
             form.fields['location'].queryset = form.fields['location'].queryset.filter(user=self.request.user)
         return form
+    
+    def form_valid(self, form):
+        try:
+            return super().form_valid(form)
+        # catch duplicate entry error returned from database
+        # not the best way to handle this. Would be better to validate before form submission.
+        except IntegrityError:
+            messages.error(self.request, "This Plant already exists.")
+            return self.form_invalid(form)
 
 class PlantInstanceUpdateStaffOnly(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = PlantInstance 
@@ -430,6 +454,15 @@ class PlantInstanceUpdateStaffOnly(LoginRequiredMixin, UserPassesTestMixin, Upda
     def test_func(self):
         # test if user is staff
         return self.request.user.is_staff
+    
+    def form_valid(self, form):
+        try:
+            return super().form_valid(form)
+        # catch duplicate entry error returned from database
+        # not the best way to handle this. Would be better to validate before form submission.
+        except IntegrityError:
+            messages.error(self.request, "This Plant already exists.")
+            return self.form_invalid(form)
 
 class PlantInstanceDelete(PermissionRequiredMixin, DeleteView): 
     model = PlantInstance 

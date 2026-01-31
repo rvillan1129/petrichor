@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, Http404
 from django.utils.http import url_has_allowed_host_and_scheme
 from .models import Plant, PlantInstance, Location
+from nursery.forms import RenewDueWateredDateForm
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.auth.models import User
 from django.views import generic
@@ -10,8 +11,8 @@ from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 import datetime
-from nursery.forms import RenewDueWateredDateForm
 from django.db.models import Q
+from django.db import IntegrityError
 
 def index(request):
     """View function for home page of site."""
@@ -429,14 +430,22 @@ class PlantInstanceDelete(PermissionRequiredMixin, DeleteView):
 
         
 class LocationCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView): 
-    model = Location 
-    fields = ['name',] 
+    model = Location  
     permission_required = 'nursery.add_location'
+    fields = ['name']
 
     def form_valid(self, form):
         # set Location user equal to user creating location
+        # safeguards that user is set to user creating location
         form.instance.user = self.request.user
-        return super().form_valid(form)
+
+        try:
+            return super().form_valid(form)
+        # catch duplicate location error returned from database
+        # not the best way to handle this. Would be better to validate before form submission.
+        except IntegrityError:
+            messages.error(self.request, "This Location already exists.")
+            return self.form_invalid(form)
     
 class LocationUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView): 
     model = Location 
@@ -449,6 +458,15 @@ class LocationUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
         # Further filter the queryset to include only objects created by the current user
         return queryset.filter(user=self.request.user)
     
+    def form_valid(self, form):
+        try:
+            return super().form_valid(form)
+        # catch duplicate location error returned from database
+        # not the best way to handle this. Would be better to validate before form submission.
+        except IntegrityError:
+            messages.error(self.request, "This Location already exists.")
+            return self.form_invalid(form)
+    
 class LocationUpdateStaffOnly(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Location
     fields = ['name', 'user']
@@ -458,6 +476,15 @@ class LocationUpdateStaffOnly(LoginRequiredMixin, UserPassesTestMixin, UpdateVie
     def test_func(self):
         # test if user is staff
         return self.request.user.is_staff
+    
+    def form_valid(self, form):
+        try:
+            return super().form_valid(form)
+        # catch duplicate location error returned from database
+        # not the best way to handle this. Would be better to validate before form submission.
+        except IntegrityError:
+            messages.error(self.request, "This Location already exists.")
+            return self.form_invalid(form)
     
 class LocationDelete(PermissionRequiredMixin, DeleteView): 
     model = Location

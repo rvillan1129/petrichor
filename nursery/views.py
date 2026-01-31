@@ -41,7 +41,7 @@ def index(request):
     # Render the HTML template index.html with the data in the context variable
     return render(request, 'index.html', context=context)
 
-class PlantListView(UserPassesTestMixin, generic.ListView):
+class PlantListView(LoginRequiredMixin, UserPassesTestMixin, generic.ListView):
     """Generic class-based view listing all plants if user is staff."""
     model = Plant
     paginate_by = 10
@@ -62,7 +62,7 @@ class PlantByUserListView(LoginRequiredMixin, generic.ListView):
             .order_by('scientific_name')
         )
 
-class PlantDetailView(generic.DetailView):
+class PlantDetailView(LoginRequiredMixin, generic.DetailView):
     model = Plant
 
     def get_context_data(self, **kwargs):
@@ -80,7 +80,7 @@ class PlantDetailView(generic.DetailView):
         return context
 
 
-class LocationListView(UserPassesTestMixin, generic.ListView):
+class LocationListView(LoginRequiredMixin, UserPassesTestMixin, generic.ListView):
     """Generic class-based view listing all locations if user is staff."""
     model = Location
     paginate_by = 10
@@ -101,7 +101,7 @@ class LocationByUserListView(LoginRequiredMixin, generic.ListView):
             .order_by('name')
         )
 
-class LocationDetailView(generic.DetailView):
+class LocationDetailView(LoginRequiredMixin, generic.DetailView):
     model = Location
 
     def get_context_data(self, **kwargs):
@@ -119,7 +119,7 @@ class LocationDetailView(generic.DetailView):
         return context
 
 
-class PlantInstanceStaffOnlyListView(UserPassesTestMixin, generic.ListView):
+class PlantInstanceStaffOnlyListView(LoginRequiredMixin, UserPassesTestMixin, generic.ListView):
     """Generic class-based view listing all plant instances if user is staff."""
     model = PlantInstance
     template_name = 'nursery/plantinstance_list_staff_only.html'
@@ -129,7 +129,7 @@ class PlantInstanceStaffOnlyListView(UserPassesTestMixin, generic.ListView):
         # test if user is staff
         return self.request.user.is_staff
 
-class PlantInstanceDetailView(generic.DetailView):
+class PlantInstanceDetailView(LoginRequiredMixin, generic.DetailView):
     model = PlantInstance
 
 class PlantInstanceByUserListView(LoginRequiredMixin, generic.ListView):
@@ -285,7 +285,7 @@ class PlantUpdateStaffOnly(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
             messages.error(self.request, "This Plant already exists.")
             return self.form_invalid(form)
 
-class PlantDelete(PermissionRequiredMixin, DeleteView): 
+class PlantDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView): 
     model = Plant 
     success_url = reverse_lazy('user-plant-templates')  
     permission_required = 'nursery.delete_plant' 
@@ -416,7 +416,7 @@ class PlantInstanceCreateFromLocation(LoginRequiredMixin, PermissionRequiredMixi
             messages.error(self.request, "This Plant already exists.")
             return self.form_invalid(form)
 
-class PlantInstanceUpdate(PermissionRequiredMixin, UpdateView):
+class PlantInstanceUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = PlantInstance 
     fields = ['plant', 'nickname', 'location', 'purchased', 'due_watered', 'snooze'] 
     permission_required = 'nursery.change_plantinstance' 
@@ -446,7 +446,7 @@ class PlantInstanceUpdate(PermissionRequiredMixin, UpdateView):
             messages.error(self.request, "This Plant already exists.")
             return self.form_invalid(form)
 
-class PlantInstanceUpdateStaffOnly(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+class PlantInstanceUpdateStaffOnly(LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin, UpdateView):
     model = PlantInstance 
     fields = ['plant', 'customer', 'nickname', 'location', 'purchased', 'due_watered', 'snooze'] 
     permission_required = 'nursery.change_plantinstance' 
@@ -464,7 +464,7 @@ class PlantInstanceUpdateStaffOnly(LoginRequiredMixin, UserPassesTestMixin, Upda
             messages.error(self.request, "This Plant already exists.")
             return self.form_invalid(form)
 
-class PlantInstanceDelete(PermissionRequiredMixin, DeleteView): 
+class PlantInstanceDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView): 
     model = PlantInstance 
     success_url = reverse_lazy('my-plants') 
     permission_required = 'nursery.delete_plantinstance' 
@@ -543,7 +543,7 @@ class LocationUpdateStaffOnly(LoginRequiredMixin, UserPassesTestMixin, UpdateVie
             messages.error(self.request, "This Location already exists.")
             return self.form_invalid(form)
     
-class LocationDelete(PermissionRequiredMixin, DeleteView): 
+class LocationDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView): 
     model = Location
     success_url = reverse_lazy('my-locations')  
     permission_required = 'nursery.delete_location' 

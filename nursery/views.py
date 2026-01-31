@@ -234,11 +234,17 @@ class PlantCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     fields = ['scientific_name', 'common_name','water', 'sun', 'description', 'care_tips'] 
     initial = {'water': 'r', 'sun': 'p',}
     permission_required = 'nursery.add_plant'
-
+    
     def form_valid(self, form):
         # set Plant user equal to user creating plant
         form.instance.user = self.request.user
-        return super().form_valid(form)
+        try:
+            return super().form_valid(form)
+        # catch duplicate entry error returned from database
+        # not the best way to handle this. Would be better to validate before form submission.
+        except IntegrityError:
+            messages.error(self.request, "This Plant already exists.")
+            return self.form_invalid(form)
 
 class PlantUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView): 
     model = Plant 
@@ -250,6 +256,15 @@ class PlantUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
         queryset = super().get_queryset()
         # Further filter the queryset to include only objects created by the current user
         return queryset.filter(user=self.request.user)
+    
+    def form_valid(self, form):
+        try:
+            return super().form_valid(form)
+        # catch duplicate entry error returned from database
+        # not the best way to handle this. Would be better to validate before form submission.
+        except IntegrityError:
+            messages.error(self.request, "This Plant already exists.")
+            return self.form_invalid(form)
 
 class PlantUpdateStaffOnly(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Plant
@@ -260,6 +275,15 @@ class PlantUpdateStaffOnly(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def test_func(self):
         # test if user is staff
         return self.request.user.is_staff
+    
+    def form_valid(self, form):
+        try:
+            return super().form_valid(form)
+        # catch duplicate entry error returned from database
+        # not the best way to handle this. Would be better to validate before form submission.
+        except IntegrityError:
+            messages.error(self.request, "This Plant already exists.")
+            return self.form_invalid(form)
 
 class PlantDelete(PermissionRequiredMixin, DeleteView): 
     model = Plant 

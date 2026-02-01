@@ -9,7 +9,7 @@
     <ul>
       {% for loc in location_list %}
         <li>
-            {{ loc.user }} - <a href="{{ loc.get_absolute_url }}">{{ loc.name }}</a>
+            <a href="{{ loc.get_absolute_url }}">{{ loc.name }}</a>
         </li>
       {% endfor %}
     </ul>

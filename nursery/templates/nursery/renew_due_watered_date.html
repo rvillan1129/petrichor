@@ -1,13 +1,17 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-  <h1>Water: {{plant_instance.nickname}} ({{ plant_instance.plant.scientific_name }})</h1>
-  <p>Owner: {{ plant_instance.customer }}</p>
-  <p>Due watered date: 
+  <h1><strong>Water:</strong> {{plant_instance.nickname}} ({{ plant_instance.plant.scientific_name }})</h1>
+  {% if user.is_staff %}
+    <p><strong>Owner:</strong> {{ plant_instance.customer }}</p>
+  {% endif %}
+  
+  <h4>
+    <strong>Due watered date:</strong> 
     <span {% if not plant_instance.is_overdue_watered %}class='text-success'{% elif plant_instance.is_overdue_watered %}class="text-danger"{% endif %}>
       {{ plant_instance.due_watered }}
     </span>
-  </p>
+  </h4>
 
   <form action="" method="post">
     {% csrf_token %}

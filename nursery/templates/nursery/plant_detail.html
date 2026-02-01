@@ -34,7 +34,7 @@
           {% if plantinst.is_overdue_watered %}
             <ul>
               <li>
-                <a href="{% url 'renew-due-watered-date' plantinst.id %}">Water</a>
+                <a href="{% url 'renew-due-watered-date' plantinst.id %}?next={{ request.path }}">Water</a>
               </li>
               <li>
                 <form id="snooze-form" method="post" action="{% url 'snooze' plantinst.id %}?next={{ request.path }}">

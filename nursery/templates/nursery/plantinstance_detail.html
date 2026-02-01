@@ -30,7 +30,7 @@
         <li><a href="{% url 'plant-instance-delete' plantinstance.id %}">Delete Plant</a></li> 
       {% endif %}
       {% if plantinstance.is_overdue_watered %}
-        <li><a href="{% url 'renew-due-watered-date' plantinstance.id %}">Water Plant</a></li>
+        <li><a href="{% url 'renew-due-watered-date' plantinstance.id %}?next={{ request.path }}">Water Plant</a></li>
         <li>
           <form id="snooze-form" method="post" action="{% url 'snooze' plantinstance.id %}?next={{ request.path }}">
             {% csrf_token %}

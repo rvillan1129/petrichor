@@ -1,4 +1,5 @@
 import datetime
+from .models import Location
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
@@ -19,3 +20,15 @@ class RenewDueWateredDateForm(forms.Form):
 
         # Remember to always return the cleaned data.
         return data
+    
+class LocationForm(forms.ModelForm):
+    class Meta:
+        model = Location
+        fields = ['name', 'user']
+
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
+            'user': forms.Select(attrs={'class': 'form-control'})
+        }
+
+    

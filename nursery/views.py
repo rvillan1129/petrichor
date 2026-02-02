@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, Http404
 from django.utils.http import url_has_allowed_host_and_scheme
 from .models import Plant, PlantInstance, Location
-from nursery.forms import RenewDueWateredDateForm
+from nursery.forms import RenewDueWateredDateForm, LocationForm
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.auth.models import User
 from django.views import generic
@@ -495,7 +495,8 @@ class PlantInstanceDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteVie
 class LocationCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView): 
     model = Location  
     permission_required = 'nursery.add_location'
-    fields = ['name']
+    fields = ['name', 'user']
+    field_class = LocationForm
 
     def form_valid(self, form):
         # set Location user equal to user creating location
@@ -569,3 +570,9 @@ class LocationDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
                 return HttpResponseRedirect( reverse("location-delete", kwargs={"pk": self.object.pk}) )
         except Exception as e: 
             return HttpResponseRedirect( reverse("location-delete", kwargs={"pk": self.object.pk}) )
+        
+class LocationCreateWithForm(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    Model = Location
+    permission_required = 'nursery.add_location'
+    fields = ['name']
+    field_class = LocationForm

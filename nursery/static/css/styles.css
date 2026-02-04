@@ -12,16 +12,3 @@
   padding: 0;
   margin: 0;
 }
-
-#snooze-form {
-  display: inline;
-}
-
-#snooze-form button {
-  padding: 0;
-  margin: 0;
-}
-
-a:link {
-  color: black;
-}

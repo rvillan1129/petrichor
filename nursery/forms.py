@@ -22,13 +22,13 @@ class RenewDueWateredDateForm(forms.Form):
         return data
     
 class LocationForm(forms.ModelForm):
+    
+    name = forms.CharField(
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    
     class Meta:
         model = Location
-        fields = ['name', 'user']
-
-        widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control'}),
-            'user': forms.Select(attrs={'class': 'form-control'})
-        }
+        fields = ('name',)
 
     

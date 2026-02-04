@@ -495,7 +495,7 @@ class PlantInstanceDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteVie
 class LocationCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView): 
     model = Location  
     permission_required = 'nursery.add_location'
-    fields = ['name', 'user']
+    fields = ['name']
     field_class = LocationForm
 
     def form_valid(self, form):
@@ -571,8 +571,3 @@ class LocationDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
         except Exception as e: 
             return HttpResponseRedirect( reverse("location-delete", kwargs={"pk": self.object.pk}) )
         
-class LocationCreateWithForm(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
-    Model = Location
-    permission_required = 'nursery.add_location'
-    fields = ['name']
-    field_class = LocationForm

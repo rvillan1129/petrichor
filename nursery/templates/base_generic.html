@@ -20,6 +20,7 @@
   
   <body style="background-color: #95ab87; color: black;">
     <div class="d-flex">
+<!-------------------- Sidebar ----------------------------------->
       <div class="flex-shrink-0 p-3">
             {% block sidebar %}
               <a
@@ -39,7 +40,6 @@
               <!-- START OF UL -->
               <ul class="list-unstyled ps-0">
                 {% if user.is_authenticated %}
-                  <li><span class="fs-6 fw-semibold">Welcome, <strong>{{ user.get_username }}</strong>!</span></li>
                   <li class="mb-1">
                     <button
                       class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed"
@@ -90,6 +90,7 @@
                     </div>
                   </li>
                   <li class="border-top my-3"></li>
+                  <li><span class="fs-6 fw-semibold">Welcome, <strong>{{ user.get_username }}</strong>!</span></li>
                 {% endif %}    
                 <li class="mb-1">
                   <button
@@ -171,6 +172,7 @@
 
             {% endblock %}
       </div>
+<!-------------------- Main Content ------------------------------>      
       <div class="flex-grow-1 p-3">
         <div class="col-sm-9">
           {% block content %}

@@ -21,7 +21,7 @@
   <body style="background-color: #95ab87; color: black;">
     <div class="d-flex">
 <!-------------------- Sidebar ----------------------------------->
-      <div class="flex-shrink-0 p-3">
+      <div class="flex-shrink-0 p-4" style="width: 280px">
             {% block sidebar %}
               <a
                 href="/"
@@ -50,12 +50,12 @@
                       Nursery
                     </button>
                     <div class="collapse" id="nursery-collapse">
-                      <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                      <ul class="navbar-nav list-unstyled fw-normal pb-1 small">
                         <li>
                           <a
                             href="{% url 'user-plant-templates' %}"
                             class="link-body-emphasis d-inline-flex text-decoration-none rounded"
-                            >Plants</a
+                            > Plants</a
                           >
                         </li>
                       </ul>
@@ -90,7 +90,9 @@
                     </div>
                   </li>
                   <li class="border-top my-3"></li>
-                  <li><span class="fs-6 fw-semibold">Welcome, <strong>{{ user.get_username }}</strong>!</span></li>
+                  <span class="align-items-center pb-3 mb-3 text-decoration-none">
+                    Welcome, <strong>{{ user.get_username }}</strong>!
+                  </span>
                 {% endif %}    
                 <li class="mb-1">
                   <button
